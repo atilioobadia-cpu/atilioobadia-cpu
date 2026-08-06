@@ -60,9 +60,9 @@
 
 <div align="center">
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=atilioobadia-cpu&show_icons=true&theme=vue&hide_border=true)
+![GitHub Stats](https://github-readme-stats-one-bice.vercel.app/api?username=atilioobadia-cpu&show_icons=true&theme=vue&hide_border=true)
 
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=atilioobadia-cpu&layout=compact&theme=vue&hide_border=true)
+![Top Languages](https://github-readme-stats-one-bice.vercel.app/api/top-langs/?username=atilioobadia-cpu&layout=compact&theme=vue&hide_border=true)
 
 </div>
 
