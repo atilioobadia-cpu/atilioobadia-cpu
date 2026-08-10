@@ -158,10 +158,6 @@
 </p>    
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=atilioobadia-cpu&label=PROFILE%20VIEWS&color=36BCF7&style=flat-square" alt="Views" />
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Building-Open%20Source-blue?style=flat" alt="Open source" />
 </p>
 
