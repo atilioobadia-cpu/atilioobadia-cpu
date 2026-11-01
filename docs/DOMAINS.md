@@ -1,24 +1,33 @@
-# 🧠 Domains
+# Domains
 
-> The problem spaces I work in every day.
+The problem spaces I work in, and what each one actually means in practice.
 
-<br>
+## Enterprise ERP systems
 
-## 🏢 Enterprise ERP Systems
-Building and extending ERP solutions on the **Frappe / ERPNext** stack for real-world operations — custom apps, DocType schemas, workflows, and integrations.
+Implementing and extending ERPNext and Frappe for organisations that have outgrown spreadsheets.
+Chart of accounts design, DocType schemas, approval workflows, permissions, and the reporting that
+management actually reads.
 
-## 🎨 White-label Desk Experiences
-Fully branded, white-labeled desk experiences — the **AIMS Desk** brand system for Alpha Associates Tanzania Limited.
+## Tanzania and East Africa localisation
 
-## 🇹🇿 Tanzania Localization
-CSF_TZ localization work to make ERPNext fit Tanzanian accounting, tax, and business requirements.
+Making an international ERP fit local statutory and accounting reality: tax handling, statutory
+returns, country-specific charts of accounts, and the naming and numbering conventions regulators
+expect. Current work targets Frappe and ERPNext v16.
 
-## 🤖 AI Agents in ERP
-LLM-powered assistants and MCP tooling embedded in the ERP ecosystem to automate and support daily operations.
+## White-label desk experiences
 
-## 📡 Communications & Tooling
-Notification, messaging, and communication tooling that keeps teams in sync inside the desk.
+Brand systems applied to the ERP desk without forking core — a coherent interface that a client's
+staff can be trained on in an afternoon, and that survives the next upgrade.
 
-<br>
+## AI inside the ERP
 
-<a href="../README.md">← Back to profile</a>
+Agents and MCP tooling that operate where the data already lives: asking an ERP question in plain
+language, drafting a journal, chasing an approval. Useful automation, with a human still holding
+the pen on anything that moves money.
+
+## Infrastructure and integrations
+
+Servers, DNS, hosting, backups, monitoring, networks and biometric attendance. The unglamorous
+layer that decides whether the system is actually usable on a Monday morning.
+
+Back to the [profile](../README.md).

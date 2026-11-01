@@ -1,235 +1,118 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=250&section=header&text=Atilio%20Obadia&fontSize=60&animation=twinkling" alt="Atilio Obadia profile header" />
-</p>
-
-<!-- Title -->
-<h3 align="center">
-    <samp>
-        &gt; Hey There!, I am
-        <b><a target="_blank" href="https://www.linkedin.com/in/eng-atilio-obadia-6141903a1">Atilio Obadia</a></b>
-    </samp>
-</h3>
-
-<br>
-
-<p align="center">
-<samp>
-「 Software Engineer building ERP solutions on the Frappe / ERPNext stack at Alpha Associates Tanzania Limited 」  
-</samp>
+  <img src="./assets/banner.svg" width="100%" alt="Atilio Obadia — open source systems developer, East Africa Community, Tanzania" />
 </p>
 
 <p align="center">
-  <img
-    src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&pause=1200&color=36BCF7&center=true&vCenter=true&width=900&lines=Software+Developer;Frappe+%26+ERPNext+specialist;Building+the+AIMS+Desk+experience;Open+source+enthusiast;Clean+%2C+efficient+code"
-    alt="Typing SVG"
-  />
+  <a href="mailto:atilioobadia@gmail.com"><img src="https://img.shields.io/badge/email-atilioobadia%40gmail.com-0f172a?style=flat-square&logo=gmail&logoColor=white" alt="Email" /></a>
+  <a href="https://www.linkedin.com/in/eng-atilio-obadia"><img src="https://img.shields.io/badge/linkedin-eng--atilio--obadia-0a66c2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+  <a href="https://atilioobadia-cpu.github.io/profile_personel/"><img src="https://img.shields.io/badge/website-portfolio-0f766e?style=flat-square&logo=googlechrome&logoColor=white" alt="Website" /></a>
+  <a href="https://github.com/atilioobadia-cpu"><img src="https://img.shields.io/badge/github-atilioobadia--cpu-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
 <p align="center">
-<img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="450" alt="Animated coding visual">
+  Software developer at <b>Alpha Associates Tanzania Limited</b> &middot; building under the <b>ERPcodec</b> brand<br/>
+  <sub>Open to ERPNext, Frappe and systems integration work across East Africa.</sub>
 </p>
 
-[![divider_arc_reactor](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/unique_effects/divider_cyber_cycle.svg)](https://github.com/atilioobadia-cpu)
+## About
 
-<!-- Title -->
-<p align="center">
-  <img src="./docs/img/aims_desk_title.svg" width="100%" alt="AIMS Desk section title" />
-</p>
+I build and run business systems: ERPNext and Frappe implementations, custom web platforms,
+integrations between tools that were never meant to talk to each other, and the infrastructure
+underneath them. I work with organisations in Tanzania and the wider East Africa Community,
+mostly where paper and spreadsheets have stopped keeping up with the operation.
 
-<p align="center">
+My background is on the infrastructure side — servers, networks, biometric attendance — which is
+why I care less about demos and more about what happens at 08:00 on a Monday. The goal is always
+the same: fewer spreadsheets, cleaner ledgers, records that survive an audit.
 
-<a href="https://github.com/atilioobadia-cpu/frappe_custom_color">
-  <img width="82%" src="./docs/img/aims_desk_portal.svg" alt="AIMS Desk portal" />
-</a>
+## What I do
 
-</p>
+| Area | What it covers |
+|---|---|
+| **ERP implementation** | Full-cycle ERPNext and Frappe rollouts: chart of accounts design, workflows, custom DocTypes, server and client scripts |
+| **Custom systems** | Purpose-built platforms when off-the-shelf stops fitting — inventory, portals, booking, dashboards |
+| **Systems integration** | REST APIs, payment and messaging gateways, third-party platforms, AI and MCP tooling |
+| **Infrastructure** | Server deployment and hardening, DNS and hosting, backups and monitoring, networking, biometric devices |
 
-<p align="center">
+## Selected work
 
-<a href="https://github.com/atilioobadia-cpu/frappe_custom_color">
-  <img width="32%" src="./docs/img/panel_frappe_custom_color.svg" alt="AIMS Desk theming" />
-</a>
-<a href="https://github.com/atilioobadia-cpu/assignment_v16">
-  <img width="32%" src="./docs/img/panel_assignment_v16.svg" alt="Assignment V16" />
-</a>
-<a href="https://github.com/atilioobadia-cpu/csf_tanzania_v16">
-  <img width="32%" src="./docs/img/panel_csf_tanzania_v16.svg" alt="CSF Tanzania" />
-</a>
+| Project | What it is | Stack |
+|---|---|---|
+| [**AIMSCAMS**](https://github.com/atilioobadia-cpu/aimscams) | Back office for Tanzanian SACCOs and microfinance institutions: members, savings, credit, teller operations, double-entry ledger and regulatory returns | TypeScript, Next.js, NestJS, PostgreSQL |
+| [**csf_tanzania_v16**](https://github.com/atilioobadia-cpu/csf_tanzania_v16) | Tanzania localisation for Frappe and ERPNext v16 — tax, statutory and country-specific accounting behaviour | Python, Frappe |
+| [**warehouse_management**](https://github.com/atilioobadia-cpu/warehouse_management) | Warehouse management system built on Frappe for X Electronics — stock, movements and locations | Python, Frappe |
+| [**assignment_v16**](https://github.com/atilioobadia-cpu/assignment_v16) | Production-ready custom app configuration and DocType schemas for Frappe v16 | Python, Frappe |
+| [**erpnext_payroll_dashboard**](https://github.com/atilioobadia-cpu/erpnext_payroll_dashboard) | Payroll dashboard for ERPNext: salary components, runs and settlement in one view | Python, Frappe |
+| [**AIMS_Ai_Agent**](https://github.com/atilioobadia-cpu/AIMS_Ai_Agent) | LLM-powered assistant for the AIMS ecosystem, embedded where the work already happens | TypeScript, AI agents |
 
-</p>
+More projects and the domains behind them: [`docs/PROJECTS.md`](docs/PROJECTS.md) &middot; [`docs/DOMAINS.md`](docs/DOMAINS.md)
 
+## Toolkit
 
-[![divider_moving_neon_gradient](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/unique_effects/divider_cyber_cycle_mirrored.svg)](https://github.com/atilioobadia-cpu)
+**Languages**
+<br/>
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
 
-<p align="center">
-  <img src="./docs/img/core_stack.svg" width="100%" alt="Core stack panel" />
-</p>
+**Platforms and frameworks**
+<br/>
+![ERPNext](https://img.shields.io/badge/ERPNext-0089FF?style=flat-square&logo=frappe&logoColor=white)
+![Frappe](https://img.shields.io/badge/Frappe-0089FF?style=flat-square&logo=frappe&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
 
+**Data and infrastructure**
+<br/>
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=mariadb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
 
-[![divider_moving_neon_gradient](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/unique_effects/divider_data_capsul.svg)](https://github.com/atilioobadia-cpu)
-
-
-# 🛠 Technologies, Projects, and Domains
-
-<table border="0" cellspacing="10" cellpadding="0">
-<tr>
-
-<!-- LEFT: TOOLS -->
-<td width="420" valign="top" align="center">
-
-<h3>🛠 Technologies</h3>
-<br>
-
-<table align="center" cellspacing="0" cellpadding="6">
-  <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original.svg" width="32"/></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mariadb/mariadb-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" width="32"/></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nginx/nginx-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redis/redis-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg" width="32"/></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/gitlab/gitlab-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vim/vim-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bash/bash-original.svg" width="32"/></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jquery/jquery-original.svg" width="32"/></td>
-  </tr>
-</table>
-
-</td>
-
-<!-- PROJECTS -->
-<td width="260" valign="top" align="center">
-
-<h3>🧪 Projects</h3>
-<br>
-
-<div style="width:220px;">
-  <a href="docs/PROJECTS.md">
-    <img src="docs/img/tech_projects_panel.svg" width="220" alt="Projects navigation panel">
-  </a>
-</div>
-
-</td>
-
-<!-- DOMAINS -->
-<td width="260" valign="top" align="center">
-
-<h3>🧠 Domains</h3>
-<br>
-
-<div style="width:220px;">
-    <a href="docs/DOMAINS.md">
-        <img src="docs/img/domains_panel.svg" width="220" alt="Domains navigation panel">
-    </a>
-</div>
-
-</td>
-
-</tr>
-</table>
-
-[![divider_moving_neon_gradient](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/bars/divider_circuit_pulse_bar.svg)](https://github.com/atilioobadia-cpu)
-
-### 📊 Vital Statistics
-
+## GitHub activity
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=atilioobadia-cpu&theme=radical" alt="Streak" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=atilioobadia-cpu&theme=github_dark" />
+    <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=atilioobadia-cpu&theme=github" width="700" alt="GitHub contribution summary" />
+  </picture>
 </p>
 
 <p align="center">
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=atilioobadia-cpu&theme=radical" alt="GitHub profile contribution summary" />
-</p>    
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Building-Open%20Source-blue?style=flat" alt="Open source" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=atilioobadia-cpu&theme=github-dark&hide_border=true" />
+    <img src="https://streak-stats.demolab.com?user=atilioobadia-cpu&theme=github&hide_border=true" width="495" alt="GitHub contribution streak" />
+  </picture>
 </p>
 
-[![divider_twin_serpant](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/bars/divider_dual_energy_tracks.svg)](https://github.com/atilioobadia-cpu)
+## Now
 
-<table width="100%" border="0" cellspacing="10" cellpadding="0">
-<tr>
+- Building **AIMSCAMS**, a specification-first back office for Tanzanian SACCOs and microfinance institutions.
+- Working through **Tanzania localisation** for ERPNext and Frappe v16.
+- Exploring **AI agents and MCP servers** that sit inside ERP workflows instead of beside them.
 
-<!-- LEFT: COLLAB -->
-<td width="33%" valign="top">
+## Connect
 
-<h2>🤝 Collaboration</h2>
+| | |
+|---|---|
+| **Email** | [atilioobadia@gmail.com](mailto:atilioobadia@gmail.com) |
+| **LinkedIn** | [eng-atilio-obadia](https://www.linkedin.com/in/eng-atilio-obadia) |
+| **Phone** | [+255 773 500 811](tel:+255773500811) |
+| **Website** | [atilioobadia-cpu.github.io/profile_personel](https://atilioobadia-cpu.github.io/profile_personel/) |
+| **Location** | East Africa Community &middot; Tanzania |
 
-I’m open to collaborating on:
-
-<ul>
-  <li>Frappe / ERPNext custom apps</li>
-  <li>White-label desk theming</li>
-  <li>Tanzania &amp; East Africa localization</li>
-  <li>LLM-powered ERP assistants</li>
-</ul>
-
-</td>
-
-<!-- MIDDLE: PANEL -->
-<td width="34%" align="center" valign="middle">
-    <a href="docs/COLLAB.md">
-        <img src="docs/img/collaboration_panel.svg" width="200px" alt="Collaboration navigation panel" />
-    </a>
-</td>
-
-<!-- RIGHT: CONTACT -->
-<td width="33%" valign="top" align="center">
-
-<h2>📫 Contact</h2>
-
-<br>
-
-<a href="mailto:atilioobadia@gmail.com">
-  <img src="https://img.shields.io/badge/email-atilioobadia%40gmail.com-red?style=for-the-badge&logo=gmail" alt="Email contact link">
-</a>
-<br><br>
-
-<a href="https://www.linkedin.com/in/eng-atilio-obadia-6141903a1">
-  <img src="https://img.shields.io/badge/linkedin-eng--atilio--obadia-blue?style=for-the-badge&logo=linkedin" alt="LinkedIn profile link">
-</a>
-<br><br>
-
-<a href="https://github.com/atilioobadia-cpu">
-  <img src="https://img.shields.io/badge/github-atilioobadia--cpu-181717?style=for-the-badge&logo=github" alt="GitHub profile link">
-</a>
-
-</td>
-
-</tr>
-</table>
-
-[![divider_twin_serpant](https://raw.githubusercontent.com/HiradEmami/readme-ux-kit/master/assets/dividers/animated/bars/divider_dual_energy_tracks.svg)](https://github.com/atilioobadia-cpu)
+Available for ERPNext implementation, custom systems and integration work. For collaboration
+guidelines see [`docs/COLLAB.md`](docs/COLLAB.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md); to
+report a vulnerability see [`SECURITY.md`](SECURITY.md).
 
 <p align="center">
-⚡ Building ERP solutions and open source for the win
-</p>
-<p align="center">
-Star ⭐ the repos if they helped you!
-</p>
-
-<p align="center">
-  <a href="./CODE_OF_CONDUCT.md">Code of Conduct</a> ·
-  <a href="./CONTRIBUTING.md">Collaboration</a> ·
-  <a href="./SECURITY.md">Security</a>
-</p>
-
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=100&section=footer" alt="Profile footer wave"/>
+  <sub>MIT licensed &middot; built and maintained in Tanzania</sub>
 </p>

@@ -1,24 +1,34 @@
-# Security Policy
+# Security policy
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-If you discover a security vulnerability in any of the projects featured on this
-profile, please report it responsibly.
+Please do not open a public issue for a security problem.
 
-**Please do not open a public issue for security vulnerabilities.**
+Email **[atilioobadia@gmail.com](mailto:atilioobadia@gmail.com)** with:
 
-Instead, send a private report to:
+- the repository and version affected,
+- a description of the issue and its impact,
+- steps to reproduce, or a proof of concept where possible,
+- any suggested remediation.
 
-- **Email:** [atilioobadia@gmail.com](mailto:atilioobadia@gmail.com)
-
-You should include:
-
-- The repository and version affected
-- A description of the vulnerability
-- Steps to reproduce (if possible)
-
-I will respond as soon as possible and keep you updated on the fix.
+You will get an acknowledgement within a few working days, an assessment of severity, and an
+update when a fix ships. Please give reasonable time for a fix before publishing details.
 
 ## Scope
 
-This policy applies to all repositories and projects linked from this profile.
+This policy covers the repositories on this profile and any deployed service I operate for a
+client. Client systems are covered by their own agreements; report those directly to me and I
+will route it.
+
+## Out of scope
+
+- Findings that require physical access to a device.
+- Reports generated solely by an automated scanner without a demonstrated impact.
+- Social engineering, spam or denial-of-service testing against production systems.
+- Dependency version warnings with no exploitable path in this code.
+
+## Handling
+
+- Secrets are never committed; `.env` files and credentials stay out of the repository.
+- Dependencies are kept current, and security-relevant upgrades take priority over feature work.
+- Confirmed issues are fixed on a private branch, released, and only then described publicly.

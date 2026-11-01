@@ -1,25 +1,32 @@
-# 🤝 Collaboration
+# Collaboration
 
-> Open source is a team sport.
+I am open to working with people who care about the same things: clean records, systems that
+survive contact with reality, and code someone else can read six months later.
 
-<br>
+## Good fits
 
-I'm open to collaborating on:
+- ERPNext and Frappe custom apps, migrations and version upgrades.
+- Tanzania and East Africa localisation work.
+- Desk theming and brand systems that do not fork core.
+- LLM and MCP tooling embedded in ERP workflows.
+- Systems integration: REST APIs, payment gateways, messaging platforms.
 
-- Frappe / ERPNext custom app development
-- White-label desk theming & brand systems
-- Tanzania & East Africa localization projects
-- LLM-powered ERP assistants / agents
-- Clean code reviews, pairing, and mentorship
+## How I work
 
-## 📫 Reach out
+1. **Written scope first.** A short document covering the problem, the constraint and the
+   definition of done. If it is not written down, it is not agreed.
+2. **Small, reviewable changes.** One logical change per pull request, conventional commit
+   messages, tests where behaviour can be tested.
+3. **Measure before claiming.** Performance and UI work are verified against a running system,
+   not judged by eye.
+4. **Documentation moves with the code.** A rule change and its documentation land together.
 
-- 📧 **Email:** [atilioobadia@gmail.com](mailto:atilioobadia@gmail.com)
-- 💼 **LinkedIn:** [eng-atilio-obadia](https://www.linkedin.com/in/eng-atilio-obadia-6141903a1)
-- 🐙 **GitHub:** [atilioobadia-cpu](https://github.com/atilioobadia-cpu)
+## Reaching me
 
-> Building ERP solutions at **Alpha Associates Tanzania Limited** · Mwanza, Tanzania
+- **Email:** [atilioobadia@gmail.com](mailto:atilioobadia@gmail.com)
+- **LinkedIn:** [eng-atilio-obadia](https://www.linkedin.com/in/eng-atilio-obadia)
+- **GitHub:** [atilioobadia-cpu](https://github.com/atilioobadia-cpu)
 
-<br>
+For security reports, use the process in [`SECURITY.md`](../SECURITY.md) instead of a public issue.
 
-<a href="../README.md">← Back to profile</a>
+Back to the [profile](../README.md).
