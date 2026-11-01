@@ -30,3 +30,15 @@ Commit messages follow the conventional format: `feat:`, `fix:`, `docs:`, `chore
 ## Questions
 
 Open an issue, or email [atilioobadia@gmail.com](mailto:atilioobadia@gmail.com).
+
+## Profile artwork
+
+The panels on the profile page are generated, not hand-drawn. Edit
+[`tools/build-profile-svgs.py`](tools/build-profile-svgs.py) and run:
+
+```powershell
+python tools/build-profile-svgs.py
+```
+
+It writes the light SVGs to `assets/` and the dark variants to `assets/dark/`, measuring
+text with the real font metrics so nothing overflows.
