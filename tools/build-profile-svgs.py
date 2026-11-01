@@ -366,7 +366,7 @@ def build_capabilities(t: dict) -> str:
     ]
     gap = 14.0
     cw = (W - gap) / 2
-    ch = 98.0
+    ch = 102.0
     s = [svg_open(top + ch * 2 + gap + 22, "What Atilio Obadia does")]
     s += head
 
@@ -384,8 +384,8 @@ def build_capabilities(t: dict) -> str:
         )
         s.append(txt(x + 30, y + 29, title, 15, t["ink"], "semi"))
         s.append(txt(x + cw - 18, y + 28, f"0{i + 1}", 10.5, t["muted"], "mono", 1, "end"))
-        for j, line in enumerate(wrap(desc, 13.6, "regular", (cw - 36) * 0.97, 2)):
-            s.append(txt(x + 18, y + 55 + j * 19, line, 13.6, t["body"]))
+        for j, line in enumerate(wrap(desc, 14, "regular", (cw - 36) * 0.97, 2)):
+            s.append(txt(x + 18, y + 56 + j * 20, line, 14, t["body"]))
 
     s.append("</svg>")
     return "".join(s)
@@ -435,7 +435,7 @@ def build_work(t: dict) -> str:
     ]
     gap = 14.0
     cw = (W - gap * 2) / 3
-    ch = 126.0
+    ch = 136.0
     s = [svg_open(top + ch * 2 + gap + 22, "Selected work by Atilio Obadia")]
     s += head
 
@@ -453,8 +453,8 @@ def build_work(t: dict) -> str:
         )
         s.append(txt(x + cw - 16, y + 34, "↗", 13, t["muted"], anchor="end"))
         s.append(txt(x + 16, y + 34, name, 14.5, t["ink"], "semi"))
-        for j, line in enumerate(wrap(desc, 13.2, "regular", (cw - 32) * 0.97, 3)):
-            s.append(txt(x + 16, y + 58 + j * 18.5, line, 13.2, t["body"]))
+        for j, line in enumerate(wrap(desc, 14, "regular", (cw - 32) * 0.97, 3)):
+            s.append(txt(x + 16, y + 59 + j * 19.5, line, 14, t["body"]))
 
         stack_txt = ""
         for part in stack:
