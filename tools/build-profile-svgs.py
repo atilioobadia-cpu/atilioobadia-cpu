@@ -28,7 +28,7 @@ THEMES = {
     "light": dict(
         ink="#0b1116",
         body="#3d4a55",
-        muted="#6b7885",
+        muted="#616e7b",
         line="#e2e7ec",
         accent="#0f766e",
         accent2="#0e7490",
