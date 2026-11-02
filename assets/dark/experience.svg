@@ -1,0 +1,42 @@
+<svg viewBox="0 0 1000 370" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Practice: ERPNext, localisation, custom systems, infrastructure">
+  <style>
+.mono{font-family:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.6,0,.2,1) .1s forwards}
+.fade{opacity:0;animation:fade .7s ease .1s forwards}
+.rise{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+.grow{transform:scaleX(0);animation:grow 1s cubic-bezier(.2,.7,.2,1) forwards}
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.a1{animation-delay:.15s}.a2{animation-delay:.3s}.a3{animation-delay:.45s}.a4{animation-delay:.6s}
+.a5{animation-delay:.75s}.a6{animation-delay:.9s}.a7{animation-delay:1.05s}.a8{animation-delay:1.2s}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0;animation:none}
+  .fade,.rise{opacity:1;animation:none}
+  .grow{transform:none;animation:none}
+  .pulse{animation:none}
+}
+</style>
+  <g class="mono">
+  <line x1="120" y1="10" x2="120" y2="360" stroke="#26313a" stroke-width="1" opacity="0.45"/>
+  <text x="48" y="42" font-size="12" fill="#2dd4bf" letter-spacing="2" class="rise a1">NOW</text>
+  <text x="136" y="42" font-size="15" fill="#e8eff4" class="rise a1">ERPcodec · founder · Savari Limited · Tanzania</text>
+  <text x="136" y="68" font-size="14" fill="#a3b0bb">ERPNext implementation, custom systems, integrations and infrastructure for East African organisations</text>
+  <text x="136" y="90" font-size="14" fill="#a3b0bb">six engagements on record — TBBCL, AATL, PMM, Mtokoma, BDS Tanzania, DICOHAS College</text>
+  <text x="48" y="138" font-size="12" fill="#2dd4bf" letter-spacing="2" class="rise a2">2026</text>
+  <text x="136" y="138" font-size="15" fill="#e8eff4" class="rise a2">AIMSCAMS · SACCO and microfinance back office</text>
+  <text x="136" y="164" font-size="14" fill="#a3b0bb">members and KYC, savings and shares, credit and teller operations on one double-entry ledger</text>
+  <text x="136" y="186" font-size="14" fill="#a3b0bb">built for Tanzanian SACCOs, where the books are the business</text>
+  <text x="48" y="234" font-size="12" fill="#2dd4bf" letter-spacing="2" class="rise a3">2025–26</text>
+  <text x="136" y="234" font-size="15" fill="#e8eff4" class="rise a3">Tanzania localisation · CSF_TZ for Frappe and ERPNext v16</text>
+  <text x="136" y="260" font-size="14" fill="#a3b0bb">statutory returns, tax handling and country chart of accounts, kept out of core</text>
+  <text x="136" y="282" font-size="14" fill="#a3b0bb">extended into desk theming, print formats and fixtures for repeatable site builds</text>
+  <text x="48" y="330" font-size="12" fill="#2dd4bf" letter-spacing="2" class="rise a4">2023–25</text>
+  <text x="136" y="330" font-size="15" fill="#e8eff4" class="rise a4">IT support and networks · biometrics, servers, DNS, hosting</text>
+  <text x="136" y="356" font-size="14" fill="#a3b0bb">the unglamorous layer — machines, LANs, backups and monitoring — that decides whether Monday works</text>
+  <text x="136" y="378" font-size="14" fill="#a3b0bb">moved from fixing hardware into building the systems that replaced the paper</text>
+  </g>
+</svg>

@@ -1,0 +1,40 @@
+<svg viewBox="0 0 1000 250" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stack: languages, ERP, web, data, AI, infrastructure, tooling">
+  <style>
+.mono{font-family:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.6,0,.2,1) .1s forwards}
+.fade{opacity:0;animation:fade .7s ease .1s forwards}
+.rise{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+.grow{transform:scaleX(0);animation:grow 1s cubic-bezier(.2,.7,.2,1) forwards}
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.a1{animation-delay:.15s}.a2{animation-delay:.3s}.a3{animation-delay:.45s}.a4{animation-delay:.6s}
+.a5{animation-delay:.75s}.a6{animation-delay:.9s}.a7{animation-delay:1.05s}.a8{animation-delay:1.2s}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0;animation:none}
+  .fade,.rise{opacity:1;animation:none}
+  .grow{transform:none;animation:none}
+  .pulse{animation:none}
+}
+</style>
+  <g class="mono">
+  <line x1="138" y1="8" x2="138" y2="238" stroke="#dde3e8" stroke-width="1" opacity="0.45"/>
+  <text x="48" y="32" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a1">LANGUAGES</text>
+  <text x="154" y="32" font-size="15" fill="#121b22" class="rise a1">TypeScript · Python · JavaScript · PHP · HTML / CSS · SQL</text>
+  <text x="48" y="64" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a2">ERP</text>
+  <text x="154" y="64" font-size="15" fill="#121b22" class="rise a2">ERPNext v16 · Frappe Framework · bench CLI · server scripts · custom apps</text>
+  <text x="48" y="96" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a3">WEB</text>
+  <text x="154" y="96" font-size="15" fill="#121b22" class="rise a3">Next.js · React · NestJS · Tailwind · REST APIs</text>
+  <text x="48" y="128" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a4">DATA</text>
+  <text x="154" y="128" font-size="15" fill="#121b22" class="rise a4">PostgreSQL · Frappe ORM · schema design · query tuning · migrations</text>
+  <text x="48" y="160" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a5">AI</text>
+  <text x="154" y="160" font-size="15" fill="#121b22" class="rise a5">MCP servers · LLM agents · RAG · OpenAI-compatible APIs</text>
+  <text x="48" y="192" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a6">INFRA</text>
+  <text x="154" y="192" font-size="15" fill="#121b22" class="rise a6">Linux · Nginx · Docker · DNS and hosting · backups and monitoring</text>
+  <text x="48" y="224" font-size="12" fill="#4b5864" letter-spacing="2" class="rise a7">TOOLING</text>
+  <text x="154" y="224" font-size="15" fill="#121b22" class="rise a7">Git · GitHub Actions · bench · Postman · VS Code · cPanel / WHM</text>
+  </g>
+</svg>

@@ -1,0 +1,102 @@
+<svg viewBox="0 0 1000 680" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System map: ERPNext and Frappe work, custom systems, integrations, infrastructure">
+  <style>
+.mono{font-family:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.6,0,.2,1) .1s forwards}
+.fade{opacity:0;animation:fade .7s ease .1s forwards}
+.rise{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+.grow{transform:scaleX(0);animation:grow 1s cubic-bezier(.2,.7,.2,1) forwards}
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.a1{animation-delay:.15s}.a2{animation-delay:.3s}.a3{animation-delay:.45s}.a4{animation-delay:.6s}
+.a5{animation-delay:.75s}.a6{animation-delay:.9s}.a7{animation-delay:1.05s}.a8{animation-delay:1.2s}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0;animation:none}
+  .fade,.rise{opacity:1;animation:none}
+  .grow{transform:none;animation:none}
+  .pulse{animation:none}
+}
+</style>
+  <g class="mono">
+  <line x1="48" y1="40" x2="952" y2="40" stroke="#dde3e8" stroke-width="1"/>
+  <text x="48" y="28" font-size="11" fill="#4b5864" letter-spacing="3.5">SYSTEM MAP — EVERYTHING FROM ONE PIPELINE</text>
+  <text x="952" y="28" font-size="11" fill="#4b5864" letter-spacing="3.5" text-anchor="end">FIG. 01</text>
+  <line x1="48" y1="646" x2="952" y2="646" stroke="#dde3e8" stroke-width="1"/>
+  <text x="952" y="668" font-size="10" fill="#5d6975" letter-spacing="2" text-anchor="end">DASHED LINES — DATA IN MOTION</text>
+  <defs><mask id="node-cutouts" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="680"><rect x="0" y="0" width="1000" height="680" fill="white"/><rect x="403" y="250" width="194" height="60" fill="black"/><rect x="73" y="136" width="184" height="58" fill="black"/><rect x="46" y="266" width="184" height="58" fill="black"/><rect x="83" y="386" width="184" height="58" fill="black"/><rect x="298" y="74" width="184" height="58" fill="black"/><rect x="543" y="81" width="184" height="58" fill="black"/><rect x="753" y="156" width="184" height="58" fill="black"/><rect x="758" y="291" width="184" height="58" fill="black"/><rect x="268" y="436" width="184" height="58" fill="black"/><rect x="628" y="391" width="184" height="58" fill="black"/><rect x="98" y="538" width="184" height="58" fill="black"/><rect x="408" y="538" width="184" height="58" fill="black"/><rect x="718" y="538" width="184" height="58" fill="black"/></mask></defs>
+  <g mask="url(#node-cutouts)"><line class="draw" x1="500.0" y1="280.0" x2="165" y2="165"/><line class="draw" x1="500.0" y1="280.0" x2="138" y2="295"/><line class="draw" x1="500.0" y1="280.0" x2="175" y2="415"/><line class="draw" x1="500.0" y1="280.0" x2="390" y2="103"/><line class="draw" x1="500.0" y1="280.0" x2="635" y2="110"/><line class="draw" x1="500.0" y1="280.0" x2="845" y2="185"/><line class="draw" x1="500.0" y1="280.0" x2="850" y2="320"/><line class="draw" x1="500.0" y1="280.0" x2="360" y2="465"/><line class="draw" x1="500.0" y1="280.0" x2="720" y2="420"/><line class="draw" x1="500.0" y1="280.0" x2="190" y2="567"/><line class="draw" x1="500.0" y1="280.0" x2="500" y2="567"/><line class="draw" x1="500.0" y1="280.0" x2="810" y2="567"/></g>
+  <g mask="url(#node-cutouts)"><line x1="500.0" y1="280.0" x2="165" y2="165" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="138" y2="295" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="175" y2="415" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="390" y2="103" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="635" y2="110" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="845" y2="185" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="850" y2="320" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="360" y2="465" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="720" y2="420" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="190" y2="567" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="500" y2="567" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/><line x1="500.0" y1="280.0" x2="810" y2="567" stroke="#4b5864" stroke-width="1" opacity=".22" stroke-dasharray="3 9"/></g>
+  <text x="165" y="118" font-size="10" fill="#0f766e" letter-spacing="3" text-anchor="middle" class="fade a3">ERP &amp; FRAPPE</text>
+  <text x="512" y="60" font-size="10" fill="#0f766e" letter-spacing="3" text-anchor="middle" class="fade a3">CUSTOM SYSTEMS</text>
+  <text x="845" y="142" font-size="10" fill="#0f766e" letter-spacing="3" text-anchor="middle" class="fade a3">PRODUCTS · PORTALS</text>
+  <text x="500" y="622" font-size="10" fill="#0f766e" letter-spacing="3" text-anchor="middle" class="fade a3">INTEGRATIONS · AI · INFRASTRUCTURE</text>
+  <g class="rise a1">
+  <rect x="405" y="252" width="190" height="56" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="500" y="276" font-size="13" fill="#121b22" letter-spacing="2" text-anchor="middle" class="fade a2">ERPCODEC.SYS</text>
+  <text x="500" y="294" font-size="8.5" fill="#4b5864" letter-spacing="0.5" text-anchor="middle" class="fade a2">one-person build pipeline</text>
+  <g class="fade a1">
+  <rect x="75" y="138" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="165" y="161" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">ERPNext rollouts</text>
+  <text x="165" y="180" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">chart of accounts · go-live</text>
+  <g class="fade a1">
+  <rect x="48" y="268" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="138" y="291" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">CSF Tanzania</text>
+  <text x="138" y="310" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">v16 localisation · statutory</text>
+  <g class="fade a2">
+  <rect x="85" y="388" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="175" y="411" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">production ledger</text>
+  <text x="175" y="430" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">multi-branch · TBBCL</text>
+  <g class="fade a2">
+  <rect x="300" y="76" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="390" y="99" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">AIMSCAMS</text>
+  <text x="390" y="118" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">SACCO back office · ledger</text>
+  <g class="fade a3">
+  <rect x="545" y="83" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="635" y="106" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">warehouse mgmt</text>
+  <text x="635" y="125" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">items · stock · locations</text>
+  <g class="fade a3">
+  <rect x="755" y="158" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="845" y="181" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">client portals</text>
+  <text x="845" y="200" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">private builds · ongoing</text>
+  <g class="fade a4">
+  <rect x="760" y="293" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="850" y="316" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">payroll dashboard</text>
+  <text x="850" y="335" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">components · runs · payslips</text>
+  <g class="fade a4">
+  <rect x="270" y="438" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="360" y="461" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">BDS Tanzania</text>
+  <text x="360" y="480" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">corporate site · systems</text>
+  <g class="fade a5">
+  <rect x="630" y="393" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="720" y="416" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">DICOHAS College</text>
+  <text x="720" y="435" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">institutional website</text>
+  <g class="fade a5">
+  <rect x="100" y="540" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="190" y="563" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">ClickPesa</text>
+  <text x="190" y="582" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">payments · REST APIs</text>
+  <g class="fade a6">
+  <rect x="410" y="540" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="500" y="563" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">biometric sync</text>
+  <text x="500" y="582" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">attendance → ERPNext</text>
+  <g class="fade a6">
+  <rect x="720" y="540" width="180" height="54" rx="2" fill="none" stroke="#dde3e8"/>
+  </g>
+  <text x="810" y="563" font-size="12" fill="#121b22" letter-spacing="1" text-anchor="middle">pgautopilot</text>
+  <text x="810" y="582" font-size="9" fill="#4b5864" letter-spacing="1" text-anchor="middle">postgres MCP server</text>
+  </g>
+</svg>

@@ -1,621 +1,769 @@
 #!/usr/bin/env python3
-"""Generate the profile section SVGs (light + dark).
+"""Build the profile panels in assets/ and assets/dark/.
 
-Text is measured with the real Segoe UI / Consolas metrics so nothing
-overflows or collides. Run:  python tools/build-profile-svgs.py
+Every panel is 1000 units wide. Light and dark are separate files so the
+palette is baked in; the README pairs them with <picture><source>.
+
+    python tools/build-profile-svgs.py
+
+The generator checks its own output: no text may cross the 48..952 margin and
+no two labels may collide. A non-zero exit means the layout needs work.
 """
+
 from __future__ import annotations
 
 import html
+import json
+import sys
 from pathlib import Path
 
-from PIL import ImageFont
-
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-W = 1000
+CONTRIB = ROOT / "tools" / "contributions.json"
 
-FONT_DIR = Path(r"C:\Windows\Fonts")
-SANS = FONT_DIR / "segoeui.ttf"
-SANS_SEMI = FONT_DIR / "seguisb.ttf"
-SANS_BOLD = FONT_DIR / "segoeuib.ttf"
-MONO = FONT_DIR / "consola.ttf"
-
-FAM = "Segoe UI, Helvetica Neue, Arial, sans-serif"
-FAM_MONO = "Consolas, SF Mono, Menlo, monospace"
+LEFT, RIGHT, WIDTH = 48, 952, 1000
+MONO = 'ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace'
 
 THEMES = {
-    "light": dict(
-        ink="#0b1116",
-        body="#3d4a55",
-        muted="#616e7b",
-        line="#e2e7ec",
-        accent="#0f766e",
-        accent2="#0e7490",
-        card="#f8fafb",
-        cardline="#e6ecf0",
-        chip="#f1f5f7",
-        chipline="#dfe7ec",
-    ),
-    "dark": dict(
-        ink="#eef3f6",
-        body="#b6c2cc",
-        muted="#7d8b97",
-        line="#232d36",
-        accent="#2dd4bf",
-        accent2="#38bdf8",
-        card="#0f151c",
-        cardline="#1e2a35",
-        chip="#131b23",
-        chipline="#24313d",
-    ),
+    "light": {
+        "bone": "#121b22",
+        "muted": "#4b5864",
+        "dim": "#5d6975",
+        "rule": "#dde3e8",
+        "accent": "#0f766e",
+        "ghost": "#eef1f4",
+        "track": "#eef1f4",
+        "l1": "#d7ebe8",
+        "l2": "#9ed3cc",
+        "l3": "#4bb2a7",
+    },
+    "dark": {
+        "bone": "#e8eff4",
+        "muted": "#a3b0bb",
+        "dim": "#7f8d99",
+        "rule": "#26313a",
+        "accent": "#2dd4bf",
+        "ghost": "#171f27",
+        "track": "#1a232b",
+        "l1": "#173330",
+        "l2": "#1e4d47",
+        "l3": "#2a7d73",
+    },
 }
 
-_fonts: dict[tuple[Path, int], ImageFont.FreeTypeFont] = {}
+CSS = """
+.mono{{font-family:{mono}}}
+.draw{{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.6,0,.2,1) .1s forwards}}
+.fade{{opacity:0;animation:fade .7s ease .1s forwards}}
+.rise{{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}}
+.grow{{transform:scaleX(0);animation:grow 1s cubic-bezier(.2,.7,.2,1) forwards}}
+.pulse{{animation:pulse 2.6s ease-in-out infinite}}
+@keyframes draw{{to{{stroke-dashoffset:0}}}}
+@keyframes fade{{to{{opacity:1}}}}
+@keyframes rise{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:translateY(0)}}}}
+@keyframes grow{{to{{transform:scaleX(1)}}}}
+@keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:.35}}}}
+.a1{{animation-delay:.15s}}.a2{{animation-delay:.3s}}.a3{{animation-delay:.45s}}.a4{{animation-delay:.6s}}
+.a5{{animation-delay:.75s}}.a6{{animation-delay:.9s}}.a7{{animation-delay:1.05s}}.a8{{animation-delay:1.2s}}
+@media (prefers-reduced-motion:reduce){{
+  .draw{{stroke-dashoffset:0;animation:none}}
+  .fade,.rise{{opacity:1;animation:none}}
+  .grow{{transform:none;animation:none}}
+  .pulse{{animation:none}}
+}}
+""".format(mono=MONO)
+
+FONTS = [
+    "C:/Windows/Fonts/consola.ttf",
+    "C:/Windows/Fonts/Cour.ttf",
+]
 
 
-def font(path: Path, size: int) -> ImageFont.FreeTypeFont:
-    key = (path, size)
-    if key not in _fonts:
-        _fonts[key] = ImageFont.truetype(str(path), size)
-    return _fonts[key]
+def num(value: float) -> str:
+    return f"{value:g}"
 
 
-WEIGHT_PATH = {"regular": SANS, "semi": SANS_SEMI, "bold": SANS_BOLD, "mono": MONO}
+class Panel:
+    def __init__(self, name: str, height: int, theme: dict, aria: str):
+        self.name = name
+        self.height = height
+        self.p = theme
+        self.aria = aria
+        self.parts: list[str] = []
+        self.texts: list[tuple[str, float, float, float, float, str]] = []
+
+    # -- primitives -----------------------------------------------------
+    def raw(self, markup: str) -> None:
+        self.parts.append(markup)
+
+    def text(
+        self,
+        x: float,
+        y: float,
+        value: str,
+        size: float = 13,
+        fill: str = "bone",
+        ls: float = 0,
+        anchor: str = "start",
+        weight: int | None = None,
+        cls: str | None = None,
+        opacity: float | None = None,
+    ) -> None:
+        attrs = [f'x="{num(x)}"', f'y="{num(y)}"', f'font-size="{num(size)}"']
+        attrs.append(f'fill="{self.p[fill]}"')
+        if ls:
+            attrs.append(f'letter-spacing="{num(ls)}"')
+        if anchor != "start":
+            attrs.append(f'text-anchor="{anchor}"')
+        if weight:
+            attrs.append(f'font-weight="{weight}"')
+        if cls:
+            attrs.append(f'class="{cls}"')
+        if opacity is not None:
+            attrs.append(f'opacity="{num(opacity)}"')
+        self.parts.append(f'<text {" ".join(attrs)}>{html.escape(value)}</text>')
+        self.texts.append((value, x, y, size, ls, anchor))
+
+    def line(
+        self,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        stroke: str = "rule",
+        width: float = 1,
+        opacity: float | None = 1,
+        cls: str | None = None,
+        dash: str | None = None,
+    ) -> None:
+        attrs = [
+            f'x1="{num(x1)}"',
+            f'y1="{num(y1)}"',
+            f'x2="{num(x2)}"',
+            f'y2="{num(y2)}"',
+            f'stroke="{self.p[stroke]}"',
+            f'stroke-width="{num(width)}"',
+        ]
+        if opacity is not None and opacity != 1:
+            attrs.append(f'opacity="{num(opacity)}"')
+        if cls:
+            attrs.append(f'class="{cls}"')
+        if dash:
+            attrs.append(f'stroke-dasharray="{dash}"')
+        self.parts.append(f'<line {" ".join(attrs)}/>')
+
+    def rect(
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        fill: str = "ghost",
+        stroke: str | None = None,
+        radius: float = 0,
+        cls: str | None = None,
+        style: str | None = None,
+        opacity: float | None = None,
+    ) -> None:
+        attrs = [
+            f'x="{num(x)}"',
+            f'y="{num(y)}"',
+            f'width="{num(w)}"',
+            f'height="{num(h)}"',
+            f'fill="{self.p[fill]}"',
+        ]
+        if stroke:
+            attrs.append(f'stroke="{self.p[stroke]}"')
+        if radius:
+            attrs.append(f'rx="{num(radius)}"')
+        if cls:
+            attrs.append(f'class="{cls}"')
+        if style:
+            attrs.append(f'style="{style}"')
+        if opacity is not None:
+            attrs.append(f'opacity="{num(opacity)}"')
+        self.parts.append(f'<rect {" ".join(attrs)}/>')
+
+    def circle(
+        self,
+        cx: float,
+        cy: float,
+        r: float,
+        fill: str = "accent",
+        stroke: str | None = None,
+        cls: str | None = None,
+        style: str | None = None,
+    ) -> None:
+        attrs = [
+            f'cx="{num(cx)}"',
+            f'cy="{num(cy)}"',
+            f'r="{num(r)}"',
+            f'fill="{self.p[fill] if fill != "none" else "none"}"',
+        ]
+        if stroke:
+            attrs.append(f'stroke="{self.p[stroke]}"')
+        if cls:
+            attrs.append(f'class="{cls}"')
+        if style:
+            attrs.append(f'style="{style}"')
+        self.parts.append(f'<circle {" ".join(attrs)}/>')
+
+    # -- header ---------------------------------------------------------
+    def figure_header(self, label: str, fig: str) -> None:
+        self.line(LEFT, 40, RIGHT, 40)
+        self.text(LEFT, 28, label, 11, "muted", ls=3.5)
+        self.text(RIGHT, 28, fig, 11, "muted", ls=3.5, anchor="end")
+
+    # -- output ---------------------------------------------------------
+    def build(self) -> str:
+        body = "\n  ".join(self.parts)
+        return (
+            f'<svg viewBox="0 0 {WIDTH} {self.height}" fill="none" '
+            f'xmlns="http://www.w3.org/2000/svg" role="img" '
+            f'aria-label="{html.escape(self.aria, quote=True)}">\n'
+            f"  <style>{CSS}</style>\n"
+            f'  <g class="mono">\n  {body}\n  </g>\n</svg>\n'
+        )
+
+    def check(self) -> list[str]:
+        problems: list[str] = []
+        spans = []
+        for value, x, y, size, ls, anchor in self.texts:
+            width = len(value) * size * 0.57 + max(0, len(value) - 1) * ls
+            if anchor == "start":
+                lo, hi = x, x + width
+            elif anchor == "end":
+                lo, hi = x - width, x
+            else:
+                lo, hi = x - width / 2, x + width / 2
+            spans.append((lo, hi, y, value))
+            if hi > RIGHT + 2:
+                problems.append(f"right overflow {hi:.0f} :: {value[:52]}")
+            if lo < LEFT - 2 and size < 40:
+                problems.append(f"left overflow {lo:.0f} :: {value[:52]}")
+        for i, (lo1, hi1, y1, v1) in enumerate(spans):
+            for lo2, hi2, y2, v2 in spans[i + 1 :]:
+                if abs(y1 - y2) < 3 and lo1 < hi2 - 6 and lo2 < hi1 - 6:
+                    problems.append(f"collision {v1[:26]!r} / {v2[:26]!r}")
+        return problems
 
 
-def tw(text: str, size: int, weight: str = "regular", ls: float = 0.0) -> float:
-    """Rendered width in px, including letter-spacing."""
-    return font(WEIGHT_PATH[weight], size).getlength(text) + ls * len(text)
+# ---------------------------------------------------------------- header
+def build_header(theme: dict) -> Panel:
+    p = Panel("header", 400, theme, "Atilio Obadia — open source systems developer, Tanzania")
+    p.line(LEFT, 58, RIGHT, 58, cls="draw")
+    p.text(LEFT, 44, "PORTFOLIO — INDEX Nº 001", 11, "muted", ls=3.5, cls="fade a1")
+    p.text(
+        RIGHT, 44, "EAST AFRICA COMMUNITY · TANZANIA", 11, "muted", ls=3.5,
+        anchor="end", cls="fade a1",
+    )
+    p.text(LEFT - 2, 176, "Atilio Obadia", 72, "bone", cls="rise a2")
+    p.text(
+        LEFT, 214,
+        "Open source systems developer — ERPNext, Frappe, integrations.",
+        19, "muted", cls="fade a3",
+    )
+    p.text(LEFT, 274, "focus  ▸", 12.5, "dim", ls=1, cls="fade a4")
+    p.text(
+        128, 274,
+        "ERPNext · Frappe · custom systems · integrations · infrastructure",
+        12.5, "accent", ls=1, cls="fade a4",
+    )
+    p.text(
+        LEFT, 300, "accepting projects · open to collaboration",
+        12.5, "dim", ls=1, cls="fade a5",
+    )
+    p.line(LEFT, 342, RIGHT, 342, cls="draw a5")
+    p.text(LEFT, 374, "ERPNEXT & FRAPPE", 11.5, "muted", ls=3, cls="fade a6")
+    p.text(248, 374, "·", 11.5, "accent", cls="fade a6")
+    p.text(282, 374, "CUSTOM SYSTEMS", 11.5, "muted", ls=3, cls="fade a6")
+    p.text(542, 374, "·", 11.5, "accent", cls="fade a6")
+    p.text(576, 374, "INTEGRATIONS", 11.5, "muted", ls=3, cls="fade a6")
+    p.text(RIGHT, 374, "ERPCODEC", 11.5, "muted", ls=3, anchor="end", cls="fade a6")
+    return p
 
 
-def txt(
-    x: float,
-    y: float,
-    s: str,
-    size: float,
-    fill: str,
-    weight: str = "regular",
-    ls: float = 0.0,
-    anchor: str = "start",
-    extra: str = "",
-) -> str:
-    fam = FAM_MONO if weight == "mono" else FAM
-    attrs = [f'x="{x:.1f}"', f'y="{y:.1f}"', f'font-family="{fam}"', f'font-size="{size:g}"']
-    if weight in ("semi", "bold"):
-        attrs.append(f'font-weight="{600 if weight == "semi" else 700}"')
-    if ls:
-        attrs.append(f'letter-spacing="{ls:g}"')
-    attrs.append(f'fill="{fill}"')
-    if anchor != "start":
-        attrs.append(f'text-anchor="{anchor}"')
-    if extra:
-        attrs.append(extra)
-    return f'<text {" ".join(attrs)}>{html.escape(s)}</text>'
+# -------------------------------------------------------------- sections
+SECTIONS = [
+    ("01", "WHOAMI", "~/01-whoami"),
+    ("02", "SYSTEM MAP", "~/02-system-map"),
+    ("03", "PROJECTS", "~/03-projects"),
+    ("04", "TELEMETRY", "~/04-telemetry"),
+    ("05", "THE ROUTE", "~/05-the-route"),
+    ("06", "STACK", "~/06-stack"),
+]
 
 
-def wrap(text: str, size: int, weight: str, maxw: float, lines_max: int) -> list[str]:
-    words = text.split()
-    out: list[str] = []
-    cur = ""
-    for word in words:
-        trial = f"{cur} {word}".strip()
-        if tw(trial, size, weight) <= maxw or not cur:
-            cur = trial
+def build_section(theme: dict, index: str, label: str, path: str) -> Panel:
+    p = Panel(f"s{index}", 92, theme, f"Section {index} — {label}")
+    p.text(LEFT, 68, index, 52, "ghost")
+    p.text(128, 58, label, 14, "accent", ls=6, cls="fade a1")
+    p.text(RIGHT, 58, path, 11, "muted", ls=2, anchor="end", cls="fade a1")
+    start = 128 + len(label) * 14 * 0.6 + max(0, len(label) - 1) * 6 + 26
+    p.line(start, 53, min(RIGHT - 130, 840), 53, cls="draw a1")
+    return p
+
+
+# ---------------------------------------------------------------- whoami
+def build_whoami(theme: dict) -> Panel:
+    p = Panel("whoami", 236, theme, "About Atilio Obadia — ERPNext, Frappe, Tanzania")
+    p.text(LEFT, 32, "Systems developer in Tanzania — ERPNext, Frappe and the systems around them.",
+           15, "bone", cls="rise a1")
+    p.text(LEFT, 60, "Implementation, localisation, integrations, and the infrastructure that keeps them running.",
+           15, "bone", cls="rise a2")
+    p.text(LEFT, 88, "Started in IT support and networks. Ended up in ERP, where every system answers for its ledger.",
+           15, "muted", cls="rise a3")
+    p.line(LEFT, 116, RIGHT, 116, opacity=0.7, cls="rise a4")
+    rows = [
+        ("FOCUS", "ERPNext & Frappe · localisation · integrations · infrastructure", "bone", "a4"),
+        ("STATUS", "accepting projects · open to collaboration", "accent", "a5"),
+        ("BRAND", "ERPcodec — systems development under Savari Limited", "bone", "a6"),
+    ]
+    for i, (label, value, fill, cls) in enumerate(rows):
+        y = 148 + i * 34
+        p.text(LEFT, y, label, 11, "muted", ls=2.5, cls=f"rise {cls}")
+        p.text(154, y, value, 15, fill, cls=f"rise {cls}")
+    return p
+
+
+# ------------------------------------------------------------- ecosystem
+NODES = [
+    (75, 138, "ERPNext rollouts", "chart of accounts · go-live"),
+    (48, 268, "CSF Tanzania", "v16 localisation · statutory"),
+    (85, 388, "production ledger", "multi-branch · TBBCL"),
+    (300, 76, "AIMSCAMS", "SACCO back office · ledger"),
+    (545, 83, "warehouse mgmt", "items · stock · locations"),
+    (755, 158, "client portals", "private builds · ongoing"),
+    (760, 293, "payroll dashboard", "components · runs · payslips"),
+    (270, 438, "BDS Tanzania", "corporate site · systems"),
+    (630, 393, "DICOHAS College", "institutional website"),
+    (100, 540, "ClickPesa", "payments · REST APIs"),
+    (410, 540, "biometric sync", "attendance → ERPNext"),
+    (720, 540, "pgautopilot", "postgres MCP server"),
+]
+
+
+def build_ecosystem(theme: dict) -> Panel:
+    p = Panel("ecosystem", 680, theme,
+              "System map: ERPNext and Frappe work, custom systems, integrations, infrastructure")
+    p.figure_header("SYSTEM MAP — EVERYTHING FROM ONE PIPELINE", "FIG. 01")
+    p.line(LEFT, 646, RIGHT, 646)
+    p.text(RIGHT, 668, "DASHED LINES — DATA IN MOTION", 10, "dim", ls=2, anchor="end")
+
+    core = (405, 252, 190, 56)
+    cutouts = [
+        f'<rect x="{core[0] - 2}" y="{core[1] - 2}" width="{core[2] + 4}" height="{core[3] + 4}" fill="black"/>'
+    ]
+    for x, y, _, _ in NODES:
+        cutouts.append(f'<rect x="{x - 2}" y="{y - 2}" width="184" height="58" fill="black"/>')
+    p.raw(
+        '<defs><mask id="node-cutouts" maskUnits="userSpaceOnUse" '
+        f'x="0" y="0" width="1000" height="680">'
+        f'<rect x="0" y="0" width="1000" height="680" fill="white"/>'
+        + "".join(cutouts)
+        + "</mask></defs>"
+    )
+
+    cx, cy = core[0] + core[2] / 2, core[1] + core[3] / 2
+    wires = []
+    flows = []
+    for x, y, _, _ in NODES:
+        nx, ny = x + 90, y + 27
+        wires.append(f'<line class="draw" x1="{cx}" y1="{cy}" x2="{nx}" y2="{ny}"/>')
+        flows.append(
+            f'<line x1="{cx}" y1="{cy}" x2="{nx}" y2="{ny}" stroke="{theme["muted"]}" '
+            f'stroke-width="1" opacity=".22" stroke-dasharray="3 9"/>'
+        )
+    p.raw('<g mask="url(#node-cutouts)">' + "".join(wires) + "</g>")
+    p.raw('<g mask="url(#node-cutouts)">' + "".join(flows) + "</g>")
+
+    clusters = [
+        (165, 118, "ERP & FRAPPE"),
+        (512, 60, "CUSTOM SYSTEMS"),
+        (845, 142, "PRODUCTS · PORTALS"),
+        (500, 622, "INTEGRATIONS · AI · INFRASTRUCTURE"),
+    ]
+    for x, y, label in clusters:
+        p.text(x, y, label, 10, "accent", ls=3, anchor="middle", cls="fade a3")
+
+    p.raw('<g class="rise a1">')
+    p.raw(
+        f'<rect x="{core[0]}" y="{core[1]}" width="{core[2]}" height="{core[3]}" '
+        f'rx="2" fill="none" stroke="{theme["rule"]}"/>'
+    )
+    p.parts.append("</g>")
+    p.text(cx, 276, "ERPCODEC.SYS", 13, "bone", ls=2, anchor="middle", cls="fade a2")
+    p.text(cx, 294, "one-person build pipeline", 8.5, "muted", ls=0.5, anchor="middle", cls="fade a2")
+
+    for i, (x, y, title, sub) in enumerate(NODES):
+        cls = f"fade a{min(8, 1 + i // 2)}"
+        p.raw(f'<g class="{cls}">')
+        p.raw(
+            f'<rect x="{x}" y="{y}" width="180" height="54" rx="2" '
+            f'fill="none" stroke="{theme["rule"]}"/>'
+        )
+        p.parts.append("</g>")
+        p.text(x + 90, y + 23, title, 12, "bone", ls=1, anchor="middle")
+        p.text(x + 90, y + 42, sub, 9, "muted", ls=1, anchor="middle")
+    return p
+
+
+# -------------------------------------------------------------- projects
+PROJECTS = [
+    (
+        "AIMSCAMS",
+        "Back office for Tanzanian SACCOs and microfinance institutions, built on a double-entry ledger.",
+        "Members and KYC, savings and shares, credit, teller operations and regulatory returns.",
+        "TYPESCRIPT · NEXT.JS · NESTJS · POSTGRESQL",
+    ),
+    (
+        "CSF TANZANIA V16",
+        "Tanzania localisation for Frappe and ERPNext v16 — the country layer, kept outside core.",
+        "Statutory returns, tax handling, country chart of accounts and the numbering regulators expect.",
+        "PYTHON · FRAPPE · ERPNEXT V16",
+    ),
+    (
+        "WAREHOUSE MANAGEMENT",
+        "Warehouse system for X Electronics: items, stock movements, locations and the records behind them.",
+        "Every movement leaves a traceable entry, so counts stop living in notebooks.",
+        "PYTHON · FRAPPE",
+    ),
+    (
+        "ERPNEXT PAYROLL DASHBOARD",
+        "Payroll workspace for ERPNext: salary components, payroll runs and settlement in one view.",
+        "Built to sit on the desk, not beside it — the numbers come from the records payroll posts.",
+        "PYTHON · FRAPPE · ERPNEXT",
+    ),
+    (
+        "AIMS AI AGENT",
+        "LLM assistant for the AIMS ecosystem, embedded where the records live, not in a separate tab.",
+        "Tooling exposed through MCP, so a question about a member or a journal is answered in place.",
+        "TYPESCRIPT · MCP · LLM TOOLING",
+    ),
+    (
+        "FRAPPE CUSTOM COLOR",
+        "White-label desk theming for Frappe and ERPNext v16 with zero edits to core.",
+        "A client's brand on the interface their staff are trained on, and it survives the next upgrade.",
+        "CSS · FRAPPE · DESK THEMING",
+    ),
+    (
+        "ERPNEXT PRINT FORMATS",
+        "Print formats for ERPNext documents — invoices, receipts and statements as the business files them.",
+        "Jinja templates kept in version control instead of living in a database field.",
+        "HTML · PYTHON · JINJA",
+    ),
+    (
+        "ALPHA-ERPNEXT-FIXTURES",
+        "Reusable fixture data so a new ERPNext site starts consistent instead of hand-built each time.",
+        "Company, accounts, tax templates and masters, exported once and replayed.",
+        "PYTHON · FRAPPE · FIXTURES",
+    ),
+    (
+        "BDS TANZANIA",
+        "Corporate website and internal business system for the Business Development Society of Tanzania.",
+        "Public presence and the working records behind it, from one codebase.",
+        "HTML · CSS · JAVASCRIPT",
+    ),
+    (
+        "PGAUTOPILOT",
+        "PostgreSQL MCP server that lets an AI assistant query and administer a database safely.",
+        "Schema-aware generation behind read and write controls, published on npm.",
+        "TYPESCRIPT · MCP · POSTGRESQL",
+    ),
+]
+
+
+def build_projects(theme: dict) -> Panel:
+    height = 20 + len(PROJECTS) * 110
+    p = Panel("projects", height, theme, f"{len(PROJECTS)} selected projects by Atilio Obadia")
+    for i, (title, line1, line2, meta) in enumerate(PROJECTS):
+        top = 20 + i * 110
+        p.text(LEFT, top + 24, f"{i + 1:02d} / {title}", 17, "bone", weight=700, ls=0.8,
+               cls="fade a1")
+        p.text(LEFT, top + 49, line1, 12, "muted")
+        p.text(LEFT, top + 68, line2, 12, "muted")
+        p.text(LEFT, top + 87, meta, 11, "dim", ls=0.4)
+        p.line(LEFT, top + 104, RIGHT, top + 104)
+    return p
+
+
+# ------------------------------------------------------------- telemetry
+LANGS = [("python", 11, 39), ("typescript", 5, 18), ("html", 5, 18),
+         ("css", 3, 11), ("php", 2, 7), ("other", 2, 7)]
+MONTHS = [("MAY", 6), ("JUN", 1), ("JUL", 7), ("AUG", 14), ("SEP", 1), ("OCT", 3)]
+
+
+def build_telemetry(theme: dict) -> Panel:
+    p = Panel("telemetry", 330, theme,
+              "Telemetry: language distribution, repositories by month, profile counters")
+    p.figure_header("TELEMETRY — WHAT THE HANDS ARE DOING", "FIG. 02")
+    p.line(360, 64, 360, 296, opacity=0.45)
+    p.line(688, 64, 688, 296, opacity=0.45)
+
+    p.text(LEFT, 78, "LANGUAGES · FIRST-PARTY REPOS", 10, "dim", ls=2.5)
+    for i, (label, count, pct) in enumerate(LANGS):
+        y = 108 + i * 38
+        width = 230 * count / 11
+        fill = "accent" if i == 0 else "bone"
+        p.text(LEFT, y, label, 11, "bone")
+        p.rect(LEFT, y + 8, 230, 6, fill="track")
+        p.rect(LEFT, y + 8, width, 6, fill=fill, cls=f"grow a{i + 1}",
+               style=f"transform-origin:{num(LEFT)}px 0")
+        p.text(LEFT + width + 10, y + 15, f"{pct}%", 10, "muted")
+
+    p.text(392, 78, "REPOSITORIES BY MONTH · 2026", 10, "dim", ls=2.5)
+    base, peak = 252, 120
+    p.line(392, base, 656, base)
+    for i, (label, value) in enumerate(MONTHS):
+        x = 392 + i * 44
+        h = peak * value / 14
+        fill = "accent" if value == 14 else "bone"
+        p.rect(x, base - h, 24, h, fill=fill, cls=f"grow a{i + 2}",
+               style=f"transform-origin:{num(x)}px {num(base)}px")
+        p.text(x + 12, base - h - 8, str(value), 10, "muted", anchor="middle")
+        p.text(x + 12, 272, label, 9.5, "dim", ls=1, anchor="middle")
+    p.text(392, 300, "busiest month — august, 14 new repositories", 10, "muted", ls=1.5)
+
+    counters = [
+        ("50", "REPOSITORIES", "bone"),
+        ("10", "PROJECTS DOCUMENTED", "bone"),
+        ("6", "CLIENT ENGAGEMENTS", "bone"),
+        ("4", "CAPABILITY AREAS", "accent"),
+    ]
+    for i, (value, label, fill) in enumerate(counters):
+        y = 118 + i * 58
+        p.text(720, y, value, 44, fill, cls=f"rise a{min(8, i + 4)}")
+        p.text(790, y - 6, label, 10, "muted", ls=2.5, cls=f"rise a{min(8, i + 4)}")
+    return p
+
+
+# ----------------------------------------------------------------- stats
+def build_stats(theme: dict) -> Panel:
+    p = Panel("stats", 310, theme, "GitHub statistics and repository languages")
+    p.rect(24, 20, 456, 270, fill="ghost", stroke="rule", radius=2)
+    p.rect(520, 20, 456, 270, fill="ghost", stroke="rule", radius=2)
+
+    p.text(52, 58, "GITHUB — AT A GLANCE", 15, "bone", weight=700, ls=2)
+    p.line(52, 72, 452, 72)
+    rows = [
+        ("PUBLIC REPOSITORIES", "50"),
+        ("STARS ACROSS REPOS", "9"),
+        ("FOLLOWERS", "15"),
+        ("FORKED REPOS", "18"),
+        ("MEMBER SINCE", "2025"),
+    ]
+    for i, (label, value) in enumerate(rows):
+        y = 110 + i * 36
+        p.text(52, y, label, 11, "muted", ls=1)
+        p.text(436, y, value, 13, "bone", anchor="end")
+
+    p.text(548, 58, "LANGUAGES BY REPOSITORY", 15, "bone", weight=700, ls=2)
+    p.line(548, 72, 948, 72)
+    bars = [("PYTHON", 11, 270), ("TYPESCRIPT", 5, 123), ("HTML", 5, 123),
+            ("CSS", 3, 74), ("PHP", 2, 49), ("OTHER", 2, 49)]
+    for i, (label, _, width) in enumerate(bars):
+        y = 105 + i * 36
+        p.text(548, y, label, 10, "muted")
+        p.rect(660, y - 9, 270, 12, fill="track", stroke="rule")
+        p.rect(660, y - 9, width, 12, fill="accent" if i == 0 else "bone",
+               cls=f"grow a{i + 1}", style="transform-origin:660px 0")
+    return p
+
+
+# -------------------------------------------------------------- activity
+def load_contrib() -> dict:
+    if not CONTRIB.exists():
+        raise SystemExit(
+            f"missing {CONTRIB.name}; run tools/fetch_contributions.py first"
+        )
+    return json.loads(CONTRIB.read_text(encoding="utf-8"))
+
+
+def build_activity(theme: dict) -> Panel:
+    data = load_contrib()
+    weeks = data["weeks"]
+    p = Panel("activity", 240, theme,
+              f"Contribution heatmap: {data['total']} contributions in the last year")
+
+    p.line(LEFT, 34, RIGHT, 34)
+    p.text(LEFT, 22, "CONTRIBUTION TELEMETRY — LAST 12 MONTHS", 11, "muted", ls=3.5)
+    p.text(RIGHT, 22, "FIG. 03", 11, "muted", ls=3.5, anchor="end")
+
+    p.text(LEFT, 112, f"{data['total']:,}", 46, "bone")
+    p.text(LEFT, 134, "CONTRIBUTIONS IN THE LAST YEAR", 10, "muted", ls=2)
+    p.text(LEFT, 166, f"{data['active_days']} active days", 11, "bone")
+    p.text(LEFT, 186, f"{data['longest_streak']} day longest streak", 11, "muted")
+    p.text(LEFT, 206, f"peak {data['peak_day']} on {data['peak_date']}", 10, "dim", ls=0.5)
+
+    grid_x, grid_y, step, cell = 296, 96, 12, 9
+    months = ["jan", "feb", "mar", "apr", "may", "jun",
+              "jul", "aug", "sep", "oct", "nov", "dec"]
+    last_label = -99
+    for w, week in enumerate(weeks):
+        for row, entry in enumerate(week):
+            level = entry["l"]
+            fill = ["track", "l1", "l2", "l3", "accent"][level]
+            p.rect(grid_x + w * step, grid_y + row * step, cell, cell, fill=fill, radius=1.5)
+        date = week[0]["d"]
+        month = int(date[5:7]) - 1
+        if w - last_label >= 4 and date[8:] <= "07":
+            p.text(grid_x + w * step, 86, months[month], 9, "dim", ls=1)
+            last_label = w
+
+    legend_y = 198
+    p.text(816, legend_y, "less", 9, "dim", ls=1, anchor="end")
+    for i in range(5):
+        p.rect(828 + i * 11, legend_y - 8, 8, 8,
+               fill=["track", "l1", "l2", "l3", "accent"][i], radius=1.5)
+    p.text(892, legend_y, "more", 9, "dim", ls=1)
+    return p
+
+
+# -------------------------------------------------------------- timeline
+MILESTONES = [
+    (130, "2023", "Gisee site — contributor", "up"),
+    (278, "2024", "tourism site · DICOHAS College", "down"),
+    (426, "2025", "BDS Tanzania — site & system", "up"),
+    (574, "2026", "ERPNext v16 localisation", "down"),
+    (722, "2026", "AIMSCAMS back office", "up"),
+    (870, "NOW", "ERPcodec · open to work", "down"),
+]
+
+
+def build_timeline(theme: dict) -> Panel:
+    p = Panel("timeline", 250, theme, "Timeline: 2023 to now")
+    p.figure_header("THE ROUTE SO FAR", "FIG. 04")
+    p.line(LEFT, 125, 952, 125, cls="draw")
+    for i, (x, year, label, side) in enumerate(MILESTONES):
+        cls = f"fade a{min(8, i + 1)}"
+        if side == "up":
+            p.line(x, 121, x, 96)
+            p.text(x, 74, year, 11, "accent", ls=2, anchor="middle", cls=cls)
+            p.text(x, 90, label, 10.5, "bone", ls=1, anchor="middle")
         else:
-            out.append(cur)
-            cur = word
-    if cur:
-        out.append(cur)
-    if len(out) > lines_max:
-        out = out[:lines_max]
-        last = out[-1]
-        while last and tw(last + "…", size, weight) > maxw:
-            last = last[:-1]
-        out[-1] = last.rstrip(" ,.;") + "…"
-    return out
-
-
-def svg_open(h: float, label: str) -> str:
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{h:g}" '
-        f'viewBox="0 0 {W} {h:g}" role="img" aria-label="{html.escape(label)}">'
-        f"<title>{html.escape(label)}</title>"
-    )
-
-
-def rule(y: float, t: dict, x1: float = 0, x2: float = W, color: str | None = None) -> str:
-    return (
-        f'<line x1="{x1:g}" y1="{y:g}" x2="{x2:g}" y2="{y:g}" '
-        f'stroke="{color or t["line"]}" stroke-width="1"/>'
-    )
-
-
-def section_head(t: dict, idx: str, label: str, tag: str) -> tuple[list[str], float]:
-    y = 16
-    parts = [txt(0, y, idx, 11.5, t["accent"], "mono", 1.2)]
-    lx = tw(idx, 11.5, "mono", 1.2) + 18
-    parts.append(txt(lx, y, label, 12.5, t["ink"], "semi", 2.2))
-    lw = tw(label, 12.5, "semi", 2.2)
-    rw = tw(tag, 10.5, "mono", 1.2)
-    parts.append(txt(W - rw, y, tag, 10.5, t["muted"], "mono", 1.2))
-    parts.append(rule(y - 4, t, lx + lw + 22, W - rw - 22))
-    return parts, 52.0
-
-
-def chip(
-    x: float, y: float, s: str, t: dict, size: float = 12, h: float = 26, padx: float = 12
-) -> tuple[str, float]:
-    w = tw(s, size) + padx * 2
-    el = (
-        f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:g}" rx="{h / 2:g}" '
-        f'fill="{t["chip"]}" stroke="{t["chipline"]}" stroke-width="1"/>'
-        f'{txt(x + padx, y + h / 2 + size * 0.36, s, size, t["ink"])}'
-    )
-    return el, w
-
-
-def key_value_chip(
-    x: float, y: float, key: str, value: str, t: dict, h: float = 28, padx: float = 13
-) -> tuple[str, float]:
-    kw = tw(key, 10, "mono", 0.8)
-    vw = tw(value, 11.5, "mono")
-    w = padx + kw + 9 + vw + padx
-    el = (
-        f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:g}" rx="{h / 2:g}" '
-        f'fill="{t["chip"]}" stroke="{t["chipline"]}" stroke-width="1"/>'
-        f'{txt(x + padx, y + h / 2 + 3.6, key, 10, t["accent"], "mono", 0.8)}'
-        f'{txt(x + padx + kw + 9, y + h / 2 + 4.4, value, 11.5, t["ink"], "mono")}'
-    )
-    return el, w
-
-
-# --------------------------------------------------------------------------- header
-
-
-def build_header(t: dict) -> str:
-    H = 312
-    s = [svg_open(H, "Atilio Obadia, open source systems developer")]
-    s.append("<defs>")
-    s.append(
-        f'<radialGradient id="glow" cx="0.92" cy="0.1" r="0.85">'
-        f'<stop offset="0" stop-color="{t["accent"]}" stop-opacity="0.16"/>'
-        f'<stop offset="0.55" stop-color="{t["accent"]}" stop-opacity="0.035"/>'
-        f'<stop offset="1" stop-color="{t["accent"]}" stop-opacity="0"/>'
-        "</radialGradient>"
-    )
-    s.append(
-        f'<linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">'
-        f'<stop offset="0" stop-color="{t["accent"]}"/>'
-        f'<stop offset="1" stop-color="{t["accent2"]}"/>'
-        "</linearGradient>"
-    )
-    s.append("</defs>")
-    s.append(f'<rect width="{W}" height="{H}" fill="url(#glow)"/>')
-
-    # brand
-    s.append(
-        f'<rect x="0" y="26" width="6" height="14" rx="1.5" fill="url(#mark)"/>'
-    )
-    s.append(txt(16, 37, "ERPcodec", 11.5, t["accent"], "mono", 2.4))
-
-    # name + role + description
-    s.append(txt(0, 118, "Atilio Obadia", 54, t["ink"], "bold", -0.6))
-    s.append(txt(2, 156, "Open source systems developer", 20, t["accent"], "semi", 0.2))
-    s.append(
-        txt(
-            2,
-            188,
-            "ERPNext and Frappe systems, built and run for organisations across East Africa.",
-            15,
-            t["body"],
-        )
-    )
-
-    # monogram
-    cx, cy = 884.0, 150.0
-    s.append(
-        f'<circle cx="{cx}" cy="{cy}" r="86" fill="none" stroke="{t["accent"]}" '
-        f'stroke-width="1.3" stroke-dasharray="2 11" stroke-linecap="round" opacity="0.5">'
-        f'<animateTransform attributeName="transform" type="rotate" from="0 {cx} {cy}" '
-        f'to="360 {cx} {cy}" dur="90s" repeatCount="indefinite"/>'
-        "</circle>"
-    )
-    s.append(
-        f'<circle cx="{cx}" cy="{cy}" r="72" fill="{t["accent"]}" opacity="0.07"/>'
-    )
-    s.append(
-        f'<circle cx="{cx}" cy="{cy}" r="72" fill="none" stroke="{t["line"]}" stroke-width="1"/>'
-    )
-    s.append(txt(cx, cy + 14, "AO", 40, t["ink"], "semi", 3, "middle"))
-
-    # availability pill under the monogram
-    label = "open to projects"
-    pw = tw(label, 11, "mono") + 38
-    px = cx - pw / 2
-    py = 250
-    s.append(
-        f'<rect x="{px:.1f}" y="{py}" width="{pw:.1f}" height="26" rx="13" '
-        f'fill="{t["chip"]}" stroke="{t["chipline"]}"/>'
-    )
-    s.append(f'<circle cx="{px + 14:.1f}" cy="{py + 13}" r="3" fill="{t["accent"]}"/>')
-    s.append(txt(px + 24, py + 17, label, 11, t["body"], "mono"))
-
-    # meta line
-    s.append(rule(224, t))
-    meta = [
-        "East Africa Community, Tanzania",
-        "Alpha Associates Tanzania Limited",
-        "atilioobadia@gmail.com",
-    ]
-    x = 0.0
-    for i, item in enumerate(meta):
-        s.append(txt(x, 256, item, 11, t["muted"], "mono"))
-        x += tw(item, 11, "mono")
-        if i < len(meta) - 1:
-            s.append(f'<circle cx="{x + 13:.1f}" cy="252" r="2" fill="{t["accent"]}"/>')
-            x += 30
-
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 01 whoami
-
-
-def build_whoami(t: dict) -> str:
-    head, top = section_head(t, "01", "whoami", "profile")
-    left_w = 572.0
-    rail_x = 664.0
-    rail_w = W - rail_x
-
-    p1 = (
-        "I build and run business systems: ERPNext and Frappe implementations, custom web "
-        "platforms, and the integrations and infrastructure underneath them. Most of the work "
-        "sits in Tanzania and the wider East Africa Community, where paper and spreadsheets have "
-        "stopped keeping up with the operation."
-    )
-    p2 = (
-        "My background is on the infrastructure side, servers, networks and biometric attendance, "
-        "which is why I care less about the demo and more about what happens at 08:00 on a Monday. "
-        "Fewer spreadsheets, cleaner ledgers, records that survive an audit."
-    )
-
-    size, lh = 16.0, 27.0
-    lines1 = wrap(p1, size, "regular", left_w * 0.97, 6)
-    lines2 = wrap(p2, size, "regular", left_w * 0.97, 6)
-
-    y = top + 22
-    body: list[str] = []
-    for line in lines1:
-        body.append(txt(2, y, line, size, t["body"]))
-        y += lh
-    y += 14
-    for line in lines2:
-        body.append(txt(2, y, line, size, t["body"]))
-        y += lh
-    left_bottom = y - lh + 8
-
-    # right rail
-    rail: list[str] = []
-    label = "open to projects"
-    pw = tw(label, 11, "mono") + 38
-    py = top + 8
-    rail.append(
-        f'<rect x="{rail_x}" y="{py:g}" width="{pw:.1f}" height="26" rx="13" '
-        f'fill="{t["chip"]}" stroke="{t["chipline"]}"/>'
-    )
-    rail.append(f'<circle cx="{rail_x + 14}" cy="{py + 13}" r="3" fill="{t["accent"]}"/>')
-    rail.append(txt(rail_x + 24, py + 17, label, 11, t["body"], "mono"))
-
-    rows = [
-        ("company", "Alpha Associates Tanzania Limited"),
-        ("brand", "ERPcodec"),
-        ("base", "Tanzania, East Africa"),
-        ("focus", "ERPNext and Frappe"),
-    ]
-    ry = top + 74
-    for key, value in rows:
-        rail.append(txt(rail_x, ry, key, 10, t["muted"], "mono", 1.4))
-        rail.append(
-            f'<text x="{rail_x}" y="{ry + 21:g}" font-family="{FAM}" font-size="13.5" '
-            f'font-weight="600" fill="{t["ink"]}">{html.escape(value)}</text>'
-        )
-        ry += 46
-    rail_bottom = ry - 46 + 24
-
-    H = max(left_bottom, rail_bottom) + 26
-    s = [svg_open(H, "About Atilio Obadia")]
-    s += head
-    s += body
-    s.append(
-        f'<line x1="{rail_x - 44:.1f}" y1="{top + 4}" x2="{rail_x - 44:.1f}" y2="{H - 26:.1f}" '
-        f'stroke="{t["line"]}" stroke-width="1"/>'
-    )
-    s += rail
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 02 what i do
-
-
-def build_capabilities(t: dict) -> str:
-    head, top = section_head(t, "02", "what i do", "services")
-    items = [
-        (
-            "ERP implementation",
-            "Full-cycle ERPNext and Frappe rollouts: chart of accounts, workflows, custom "
-            "DocTypes, server and client scripts.",
-        ),
-        (
-            "Custom systems",
-            "Purpose-built platforms when off-the-shelf stops fitting: inventory, portals, "
-            "booking and operations dashboards.",
-        ),
-        (
-            "Systems integration",
-            "REST APIs, payment and messaging gateways, and AI and MCP tooling that sits inside "
-            "ERP workflows.",
-        ),
-        (
-            "Infrastructure",
-            "Servers, DNS, hosting, backups, monitoring, networks and biometric attendance. "
-            "The layer that keeps it usable.",
-        ),
-    ]
-    gap = 14.0
-    cw = (W - gap) / 2
-    ch = 102.0
-    s = [svg_open(top + ch * 2 + gap + 22, "What Atilio Obadia does")]
-    s += head
-
-    for i, (title, desc) in enumerate(items):
-        col, row = i % 2, i // 2
-        x = col * (cw + gap)
-        y = top + row * (ch + gap)
-        s.append(
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{cw:.1f}" height="{ch:g}" rx="12" '
-            f'fill="{t["card"]}" stroke="{t["cardline"]}" stroke-width="1"/>'
-        )
-        s.append(
-            f'<rect x="{x + 18:.1f}" y="{y + 18:.1f}" width="3" height="13" rx="1.5" '
-            f'fill="{t["accent"]}"/>'
-        )
-        s.append(txt(x + 30, y + 29, title, 15, t["ink"], "semi"))
-        s.append(txt(x + cw - 18, y + 28, f"0{i + 1}", 10.5, t["muted"], "mono", 1, "end"))
-        for j, line in enumerate(wrap(desc, 14, "regular", (cw - 36) * 0.97, 2)):
-            s.append(txt(x + 18, y + 56 + j * 20, line, 14, t["body"]))
-
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 03 work
-
-
-def build_work(t: dict) -> str:
-    head, top = section_head(t, "03", "selected work", "repositories")
-    projects = [
-        (
-            "AIMSCAMS",
-            "Back office for Tanzanian SACCOs and microfinance: members, savings, credit, "
-            "ledger and regulatory returns.",
-            ["TypeScript", "Next.js", "NestJS", "PostgreSQL"],
-        ),
-        (
-            "csf_tanzania_v16",
-            "Tanzania localisation for Frappe and ERPNext v16: tax, statutory and country "
-            "accounting behaviour.",
-            ["Python", "Frappe"],
-        ),
-        (
-            "warehouse_management",
-            "Warehouse system on Frappe for X Electronics: stock, movements and storage "
-            "locations.",
-            ["Python", "Frappe"],
-        ),
-        (
-            "assignment_v16",
-            "Production-ready custom app configuration and DocType schemas for the Frappe "
-            "v16 framework.",
-            ["Python", "Frappe"],
-        ),
-        (
-            "erpnext_payroll_dashboard",
-            "Payroll dashboard for ERPNext: salary components, runs and settlement in one "
-            "place.",
-            ["Python", "Frappe"],
-        ),
-        (
-            "AIMS_Ai_Agent",
-            "LLM assistant for the AIMS ecosystem, embedded where the work already happens.",
-            ["TypeScript", "AI agents"],
-        ),
-    ]
-    gap = 14.0
-    cw = (W - gap * 2) / 3
-    ch = 136.0
-    s = [svg_open(top + ch * 2 + gap + 22, "Selected work by Atilio Obadia")]
-    s += head
-
-    for i, (name, desc, stack) in enumerate(projects):
-        col, row = i % 3, i // 3
-        x = col * (cw + gap)
-        y = top + row * (ch + gap)
-        s.append(
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{cw:.1f}" height="{ch:g}" rx="12" '
-            f'fill="{t["card"]}" stroke="{t["cardline"]}" stroke-width="1"/>'
-        )
-        s.append(
-            f'<rect x="{x + 16:.1f}" y="{y + 17:.1f}" width="20" height="2.5" rx="1.25" '
-            f'fill="{t["accent"]}"/>'
-        )
-        s.append(txt(x + cw - 16, y + 34, "↗", 13, t["muted"], anchor="end"))
-        s.append(txt(x + 16, y + 34, name, 14.5, t["ink"], "semi"))
-        for j, line in enumerate(wrap(desc, 14, "regular", (cw - 32) * 0.97, 3)):
-            s.append(txt(x + 16, y + 59 + j * 19.5, line, 14, t["body"]))
-
-        stack_txt = ""
-        for part in stack:
-            trial = f"{stack_txt} · {part}" if stack_txt else part
-            if tw(trial, 11, "mono") <= cw - 32:
-                stack_txt = trial
-        s.append(txt(x + 16, y + ch - 16, stack_txt, 11, t["muted"], "mono"))
-
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 04 activity header
-
-
-def build_activity_head(t: dict) -> str:
-    head, top = section_head(t, "04", "activity", "telemetry")
-    s = [svg_open(46, "GitHub activity")]
-    s += head
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 05 toolkit
-
-
-def build_toolkit(t: dict) -> str:
-    head, top = section_head(t, "05", "toolkit", "stack")
-    groups = [
-        ("Languages", ["TypeScript", "Python", "JavaScript", "PHP", "HTML", "CSS"]),
-        ("Platforms", ["ERPNext", "Frappe", "Next.js", "NestJS", "Node.js", "React"]),
-        ("Data", ["PostgreSQL", "MariaDB", "Redis"]),
-        ("Infrastructure", ["Docker", "Linux", "Nginx", "Git"]),
-    ]
-    label_x = 0.0
-    chip_x = 172.0
-    row_h = 48.0
-    s = [svg_open(top + len(groups) * row_h + 8, "Toolkit")]
-    s += head
-
-    for i, (label, chips) in enumerate(groups):
-        y = top + i * row_h
-        s.append(txt(label_x, y + 20, label, 10.5, t["muted"], "mono", 1.4))
-        x = chip_x
-        chip_y = y + 4
-        for item in chips:
-            el, w = chip(x, chip_y, item, t)
-            if x + w > W:
-                raise SystemExit(f"toolkit row overflows: {label}")
-            s.append(el)
-            x += w + 8
-
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 06 how i work
-
-
-def build_process(t: dict) -> str:
-    head, top = section_head(t, "06", "how i work", "method")
-    rows = [
-        ("Written scope", "The problem, the constraint and the definition of done, in one page."),
-        ("Data model first", "Schemas, ledgers and permissions settled before a screen is drawn."),
-        ("Small, reviewable changes", "One logical change per pull request, with tests where it counts."),
-        ("Run and document", "Deployment, backups, monitoring and docs ship with the system."),
-    ]
-    row_h = 50.0
-    s = [svg_open(top + len(rows) * row_h + 10, "How Atilio Obadia works")]
-    s += head
-
-    for i, (title, desc) in enumerate(rows):
-        y = top + i * row_h
-        s.append(txt(0, y + 20, f"0{i + 1}", 11, t["accent"], "mono", 1.2))
-        s.append(txt(40, y + 20, title, 14, t["ink"], "semi"))
-        s.append(txt(330, y + 20, desc, 13.6, t["body"]))
-        if i < len(rows) - 1:
-            s.append(rule(y + row_h - 6, t))
-
-    s.append("</svg>")
-    return "".join(s)
-
-
-# --------------------------------------------------------------------------- 07 connect
-
-
-def build_connect(t: dict) -> str:
-    head, top = section_head(t, "07", "connect", "contact")
-    H = top + 196
-    s = [svg_open(H, "Contact Atilio Obadia")]
-    s += head
-
-    s.append(
-        txt(
-            0,
-            top + 30,
-            "Open to ERPNext implementation, custom systems and integration work.",
-            21,
-            t["ink"],
-            "semi",
-            -0.1,
-        )
-    )
-    s.append(
-        txt(
-            0,
-            top + 56,
-            "East Africa Community, Tanzania. Accepting project work across the region.",
-            14,
-            t["body"],
-        )
-    )
-
-    rows = [
-        [("email", "atilioobadia@gmail.com"), ("phone", "+255 773 500 811")],
-        [
-            ("linkedin", "/in/eng-atilio-obadia"),
-            ("portfolio", "atilioobadia-cpu.github.io"),
-            ("github", "@atilioobadia-cpu"),
-        ],
-    ]
-    for r, row in enumerate(rows):
-        x = 0.0
-        y = top + 84 + r * 38
-        for key, value in row:
-            el, w = key_value_chip(x, y, key, value, t)
-            if x + w > W:
-                raise SystemExit(f"connect row overflows: {key}")
-            s.append(el)
-            x += w + 10
-
-    s.append(rule(top + 166, t))
-    s.append(
-        txt(0, top + 190, "MIT licensed · built and maintained in Tanzania", 10.5, t["muted"], "mono")
-    )
-    s.append(txt(W, top + 190, "Atilio Obadia", 10.5, t["muted"], "mono", 1, "end"))
-    s.append("</svg>")
-    return "".join(s)
-
-
-BUILDERS = {
-    "header": build_header,
-    "whoami": build_whoami,
-    "capabilities": build_capabilities,
-    "work": build_work,
-    "activity": build_activity_head,
-    "toolkit": build_toolkit,
-    "process": build_process,
-    "connect": build_connect,
-}
-
-
-def main() -> None:
+            p.line(x, 129, x, 154)
+            p.text(x, 172, year, 11, "accent", ls=2, anchor="middle", cls=cls)
+            p.text(x, 188, label, 10.5, "bone", ls=1, anchor="middle")
+        if year == "NOW":
+            p.circle(x, 125, 5, fill="none", stroke="accent", cls="pulse")
+            p.circle(x, 125, 4, fill="accent")
+        else:
+            p.circle(x, 125, 4, fill="bone")
+    p.text(952, 222, "2026 → the interesting part", 11, "dim", ls=1.5, anchor="end")
+    return p
+
+
+# ------------------------------------------------------------ experience
+ROLES = [
+    ("NOW", "ERPcodec · founder · Savari Limited · Tanzania", [
+        "ERPNext implementation, custom systems, integrations and infrastructure for East African organisations",
+        "six engagements on record — TBBCL, AATL, PMM, Mtokoma, BDS Tanzania, DICOHAS College",
+    ]),
+    ("2026", "AIMSCAMS · SACCO and microfinance back office", [
+        "members and KYC, savings and shares, credit and teller operations on one double-entry ledger",
+        "built for Tanzanian SACCOs, where the books are the business",
+    ]),
+    ("2025–26", "Tanzania localisation · CSF_TZ for Frappe and ERPNext v16", [
+        "statutory returns, tax handling and country chart of accounts, kept out of core",
+        "extended into desk theming, print formats and fixtures for repeatable site builds",
+    ]),
+    ("2023–25", "IT support and networks · biometrics, servers, DNS, hosting", [
+        "the unglamorous layer — machines, LANs, backups and monitoring — that decides whether Monday works",
+        "moved from fixing hardware into building the systems that replaced the paper",
+    ]),
+]
+
+
+def build_experience(theme: dict) -> Panel:
+    p = Panel("experience", 370, theme, "Practice: ERPNext, localisation, custom systems, infrastructure")
+    p.line(120, 10, 120, 360, opacity=0.45)
+    for i, (year, title, lines) in enumerate(ROLES):
+        top = 42 + i * 96
+        cls = f"rise a{min(8, i + 1)}"
+        p.text(LEFT, top, year, 12, "accent", ls=2, cls=cls)
+        p.text(136, top, title, 15, "bone", cls=cls)
+        p.text(136, top + 26, lines[0], 14, "muted")
+        p.text(136, top + 48, lines[1], 14, "muted")
+    return p
+
+
+# ----------------------------------------------------------------- stack
+STACK = [
+    ("LANGUAGES", "TypeScript · Python · JavaScript · PHP · HTML / CSS · SQL"),
+    ("ERP", "ERPNext v16 · Frappe Framework · bench CLI · server scripts · custom apps"),
+    ("WEB", "Next.js · React · NestJS · Tailwind · REST APIs"),
+    ("DATA", "PostgreSQL · Frappe ORM · schema design · query tuning · migrations"),
+    ("AI", "MCP servers · LLM agents · RAG · OpenAI-compatible APIs"),
+    ("INFRA", "Linux · Nginx · Docker · DNS and hosting · backups and monitoring"),
+    ("TOOLING", "Git · GitHub Actions · bench · Postman · VS Code · cPanel / WHM"),
+]
+
+
+def build_stack(theme: dict) -> Panel:
+    p = Panel("stack", 250, theme, "Stack: languages, ERP, web, data, AI, infrastructure, tooling")
+    p.line(138, 8, 138, 238, opacity=0.45)
+    for i, (label, value) in enumerate(STACK):
+        y = 32 + i * 32
+        cls = f"rise a{min(8, i + 1)}"
+        p.text(LEFT, y, label, 12, "muted", ls=2, cls=cls)
+        p.text(154, y, value, 15, "bone", cls=cls)
+    return p
+
+
+# ---------------------------------------------------------------- footer
+def build_footer(theme: dict) -> Panel:
+    p = Panel("footer", 110, theme, "Status: accepting projects · Tanzania")
+    p.line(LEFT, 24, RIGHT, 24, cls="draw")
+    p.circle(60, 64, 6, fill="none", stroke="accent", cls="pulse")
+    p.circle(60, 64, 4, fill="accent")
+    p.text(82, 62, "STATUS — ACCEPTING PROJECTS", 12, "bone", ls=3)
+    p.text(82, 82, "ERPNext · Frappe · integrations — East Africa Community, Tanzania",
+           11, "muted", ls=2)
+    p.text(RIGHT, 66, "atilioobadia-cpu.github.io/profile_personel · © 2026",
+           13, "muted", anchor="end")
+    return p
+
+
+# ------------------------------------------------------------------ main
+def main() -> int:
     (ASSETS / "dark").mkdir(parents=True, exist_ok=True)
-    for name, fn in BUILDERS.items():
-        for theme_name, theme in THEMES.items():
-            out = ASSETS / name if theme_name == "light" else ASSETS / "dark" / name
-            out = out.with_suffix(".svg")
-            out.write_text(fn(theme), encoding="utf-8")
-            print(f"{out.relative_to(ROOT)}  {out.stat().st_size:>6} bytes")
+    panels: list[Panel] = []
+    for theme_name, theme in THEMES.items():
+        built = [
+            build_header(theme),
+            *[build_section(theme, *row) for row in SECTIONS],
+            build_whoami(theme),
+            build_ecosystem(theme),
+            build_projects(theme),
+            build_telemetry(theme),
+            build_stats(theme),
+            build_activity(theme),
+            build_timeline(theme),
+            build_experience(theme),
+            build_stack(theme),
+            build_footer(theme),
+        ]
+        target = ASSETS / theme_name if theme_name == "dark" else ASSETS
+        target.mkdir(parents=True, exist_ok=True)
+        for panel in built:
+            (target / f"{panel.name}.svg").write_text(panel.build(), encoding="utf-8")
+        panels.extend(built)
+        print(f"{theme_name}: {len(built)} panels -> {target}")
+
+    problems = []
+    for panel in panels:
+        for problem in panel.check():
+            problems.append(f"{panel.name}: {problem}")
+
+    if problems:
+        print(f"\n{len(problems)} layout problem(s):")
+        for problem in problems[:40]:
+            print("  " + problem)
+        return 1
+
+    print(f"\nlayout: 0 overflow, 0 collisions across {len(panels)} panels")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

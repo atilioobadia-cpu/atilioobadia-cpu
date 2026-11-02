@@ -1,0 +1,84 @@
+<svg viewBox="0 0 1000 330" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Telemetry: language distribution, repositories by month, profile counters">
+  <style>
+.mono{font-family:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.5s cubic-bezier(.6,0,.2,1) .1s forwards}
+.fade{opacity:0;animation:fade .7s ease .1s forwards}
+.rise{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+.grow{transform:scaleX(0);animation:grow 1s cubic-bezier(.2,.7,.2,1) forwards}
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes grow{to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.a1{animation-delay:.15s}.a2{animation-delay:.3s}.a3{animation-delay:.45s}.a4{animation-delay:.6s}
+.a5{animation-delay:.75s}.a6{animation-delay:.9s}.a7{animation-delay:1.05s}.a8{animation-delay:1.2s}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0;animation:none}
+  .fade,.rise{opacity:1;animation:none}
+  .grow{transform:none;animation:none}
+  .pulse{animation:none}
+}
+</style>
+  <g class="mono">
+  <line x1="48" y1="40" x2="952" y2="40" stroke="#dde3e8" stroke-width="1"/>
+  <text x="48" y="28" font-size="11" fill="#4b5864" letter-spacing="3.5">TELEMETRY — WHAT THE HANDS ARE DOING</text>
+  <text x="952" y="28" font-size="11" fill="#4b5864" letter-spacing="3.5" text-anchor="end">FIG. 02</text>
+  <line x1="360" y1="64" x2="360" y2="296" stroke="#dde3e8" stroke-width="1" opacity="0.45"/>
+  <line x1="688" y1="64" x2="688" y2="296" stroke="#dde3e8" stroke-width="1" opacity="0.45"/>
+  <text x="48" y="78" font-size="10" fill="#5d6975" letter-spacing="2.5">LANGUAGES · FIRST-PARTY REPOS</text>
+  <text x="48" y="108" font-size="11" fill="#121b22">python</text>
+  <rect x="48" y="116" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="116" width="230" height="6" fill="#0f766e" class="grow a1" style="transform-origin:48px 0"/>
+  <text x="288" y="123" font-size="10" fill="#4b5864">39%</text>
+  <text x="48" y="146" font-size="11" fill="#121b22">typescript</text>
+  <rect x="48" y="154" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="154" width="104.545" height="6" fill="#121b22" class="grow a2" style="transform-origin:48px 0"/>
+  <text x="162.545" y="161" font-size="10" fill="#4b5864">18%</text>
+  <text x="48" y="184" font-size="11" fill="#121b22">html</text>
+  <rect x="48" y="192" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="192" width="104.545" height="6" fill="#121b22" class="grow a3" style="transform-origin:48px 0"/>
+  <text x="162.545" y="199" font-size="10" fill="#4b5864">18%</text>
+  <text x="48" y="222" font-size="11" fill="#121b22">css</text>
+  <rect x="48" y="230" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="230" width="62.7273" height="6" fill="#121b22" class="grow a4" style="transform-origin:48px 0"/>
+  <text x="120.727" y="237" font-size="10" fill="#4b5864">11%</text>
+  <text x="48" y="260" font-size="11" fill="#121b22">php</text>
+  <rect x="48" y="268" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="268" width="41.8182" height="6" fill="#121b22" class="grow a5" style="transform-origin:48px 0"/>
+  <text x="99.8182" y="275" font-size="10" fill="#4b5864">7%</text>
+  <text x="48" y="298" font-size="11" fill="#121b22">other</text>
+  <rect x="48" y="306" width="230" height="6" fill="#eef1f4"/>
+  <rect x="48" y="306" width="41.8182" height="6" fill="#121b22" class="grow a6" style="transform-origin:48px 0"/>
+  <text x="99.8182" y="313" font-size="10" fill="#4b5864">7%</text>
+  <text x="392" y="78" font-size="10" fill="#5d6975" letter-spacing="2.5">REPOSITORIES BY MONTH · 2026</text>
+  <line x1="392" y1="252" x2="656" y2="252" stroke="#dde3e8" stroke-width="1"/>
+  <rect x="392" y="200.571" width="24" height="51.4286" fill="#121b22" class="grow a2" style="transform-origin:392px 252px"/>
+  <text x="404" y="192.571" font-size="10" fill="#4b5864" text-anchor="middle">6</text>
+  <text x="404" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">MAY</text>
+  <rect x="436" y="243.429" width="24" height="8.57143" fill="#121b22" class="grow a3" style="transform-origin:436px 252px"/>
+  <text x="448" y="235.429" font-size="10" fill="#4b5864" text-anchor="middle">1</text>
+  <text x="448" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">JUN</text>
+  <rect x="480" y="192" width="24" height="60" fill="#121b22" class="grow a4" style="transform-origin:480px 252px"/>
+  <text x="492" y="184" font-size="10" fill="#4b5864" text-anchor="middle">7</text>
+  <text x="492" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">JUL</text>
+  <rect x="524" y="132" width="24" height="120" fill="#0f766e" class="grow a5" style="transform-origin:524px 252px"/>
+  <text x="536" y="124" font-size="10" fill="#4b5864" text-anchor="middle">14</text>
+  <text x="536" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">AUG</text>
+  <rect x="568" y="243.429" width="24" height="8.57143" fill="#121b22" class="grow a6" style="transform-origin:568px 252px"/>
+  <text x="580" y="235.429" font-size="10" fill="#4b5864" text-anchor="middle">1</text>
+  <text x="580" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">SEP</text>
+  <rect x="612" y="226.286" width="24" height="25.7143" fill="#121b22" class="grow a7" style="transform-origin:612px 252px"/>
+  <text x="624" y="218.286" font-size="10" fill="#4b5864" text-anchor="middle">3</text>
+  <text x="624" y="272" font-size="9.5" fill="#5d6975" letter-spacing="1" text-anchor="middle">OCT</text>
+  <text x="392" y="300" font-size="10" fill="#4b5864" letter-spacing="1.5">busiest month — august, 14 new repositories</text>
+  <text x="720" y="118" font-size="44" fill="#121b22" class="rise a4">50</text>
+  <text x="790" y="112" font-size="10" fill="#4b5864" letter-spacing="2.5" class="rise a4">REPOSITORIES</text>
+  <text x="720" y="176" font-size="44" fill="#121b22" class="rise a5">10</text>
+  <text x="790" y="170" font-size="10" fill="#4b5864" letter-spacing="2.5" class="rise a5">PROJECTS DOCUMENTED</text>
+  <text x="720" y="234" font-size="44" fill="#121b22" class="rise a6">6</text>
+  <text x="790" y="228" font-size="10" fill="#4b5864" letter-spacing="2.5" class="rise a6">CLIENT ENGAGEMENTS</text>
+  <text x="720" y="292" font-size="44" fill="#0f766e" class="rise a7">4</text>
+  <text x="790" y="286" font-size="10" fill="#4b5864" letter-spacing="2.5" class="rise a7">CAPABILITY AREAS</text>
+  </g>
+</svg>
