@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">Atilio Obadia</title>
+  <desc id="desc">Software Developer, ERPNext and Frappe, Applied AI. Building reliable business systems for Tanzania and East Africa.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d716b"/>
+      <stop offset="1" stop-color="#064a46"/>
+    </linearGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="2" fill="#b5e4df" opacity=".24"/>
+    </pattern>
+    <clipPath id="clip"><rect width="1200" height="280" rx="18"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="280" fill="url(#bg)"/>
+    <rect x="720" y="18" width="440" height="238" fill="url(#dots)"/>
+    <g fill="none" stroke="#b5e4df" stroke-width="2" opacity=".16">
+      <circle cx="1010" cy="140" r="54"/>
+      <circle cx="1010" cy="140" r="102"/>
+      <circle cx="1010" cy="140" r="150"/>
+    </g>
+    <rect x="66" y="62" width="48" height="5" rx="2.5" fill="#83d3ca"/>
+    <text x="66" y="132" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Atilio Obadia</text>
+    <text x="67" y="177" fill="#d3eeeb" font-family="Arial, Helvetica, sans-serif" font-size="24">Software Developer · ERPNext &amp; Frappe · Applied AI</text>
+    <text x="67" y="219" fill="#a9d8d3" font-family="Arial, Helvetica, sans-serif" font-size="18">Reliable business systems for Tanzania and East Africa</text>
+  </g>
+</svg>
